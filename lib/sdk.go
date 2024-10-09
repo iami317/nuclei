@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"github.com/projectdiscovery/retryablehttp-go"
 	"io"
 
 	"github.com/iami317/nuclei/v3/pkg/authprovider"
