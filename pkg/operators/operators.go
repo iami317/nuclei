@@ -7,10 +7,10 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/projectdiscovery/nuclei/v3/pkg/operators/extractors"
-	"github.com/projectdiscovery/nuclei/v3/pkg/operators/matchers"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/generators"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/utils/excludematchers"
+	"github.com/iami317/nuclei/v3/pkg/operators/extractors"
+	"github.com/iami317/nuclei/v3/pkg/operators/matchers"
+	"github.com/iami317/nuclei/v3/pkg/protocols/common/generators"
+	"github.com/iami317/nuclei/v3/pkg/protocols/common/utils/excludematchers"
 	sliceutil "github.com/projectdiscovery/utils/slice"
 )
 

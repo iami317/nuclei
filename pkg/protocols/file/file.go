@@ -1,15 +1,15 @@
 package file
 
 import (
+	"github.com/docker/go-units"
 	"path/filepath"
 	"strings"
 
-	"github.com/docker/go-units"
 	"github.com/h2non/filetype"
 	"github.com/pkg/errors"
 
-	"github.com/projectdiscovery/nuclei/v3/pkg/operators"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols"
+	"github.com/iami317/nuclei/v3/pkg/operators"
+	"github.com/iami317/nuclei/v3/pkg/protocols"
 )
 
 var (

@@ -3,6 +3,7 @@ package httpclientpool
 import (
 	"context"
 	"crypto/tls"
+	"github.com/projectdiscovery/retryablehttp-go"
 	"net"
 	"net/http"
 	"net/http/cookiejar"
@@ -16,14 +17,13 @@ import (
 	"golang.org/x/net/proxy"
 	"golang.org/x/net/publicsuffix"
 
+	"github.com/iami317/nuclei/v3/pkg/protocols"
+	"github.com/iami317/nuclei/v3/pkg/protocols/common/protocolstate"
+	"github.com/iami317/nuclei/v3/pkg/protocols/utils"
+	"github.com/iami317/nuclei/v3/pkg/types"
+	"github.com/iami317/nuclei/v3/pkg/types/scanstrategy"
 	"github.com/projectdiscovery/fastdialer/fastdialer/ja3/impersonate"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/protocolstate"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/utils"
-	"github.com/projectdiscovery/nuclei/v3/pkg/types"
-	"github.com/projectdiscovery/nuclei/v3/pkg/types/scanstrategy"
 	"github.com/projectdiscovery/rawhttp"
-	"github.com/projectdiscovery/retryablehttp-go"
 	mapsutil "github.com/projectdiscovery/utils/maps"
 )
 

@@ -8,10 +8,10 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi2"
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/pkg/errors"
-	"github.com/projectdiscovery/nuclei/v3/pkg/input/formats"
-	"github.com/projectdiscovery/nuclei/v3/pkg/input/formats/openapi"
+	"github.com/iami317/nuclei/v3/pkg/input/formats"
+	"github.com/iami317/nuclei/v3/pkg/input/formats/openapi"
 	"github.com/invopop/yaml"
+	"github.com/pkg/errors"
 
 	"github.com/getkin/kin-openapi/openapi2conv"
 )

@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	nuclei "github.com/projectdiscovery/nuclei/v3/lib"
+	nuclei "github.com/iami317/nuclei/v3/lib"
 )
 
 func main() {

@@ -3,12 +3,12 @@ package templates
 import (
 	"github.com/pkg/errors"
 
+	"github.com/iami317/nuclei/v3/pkg/keys"
+	"github.com/iami317/nuclei/v3/pkg/model"
+	"github.com/iami317/nuclei/v3/pkg/protocols"
+	"github.com/iami317/nuclei/v3/pkg/utils/stats"
+	"github.com/iami317/nuclei/v3/pkg/workflows"
 	"github.com/projectdiscovery/gologger"
-	"github.com/projectdiscovery/nuclei/v3/pkg/keys"
-	"github.com/projectdiscovery/nuclei/v3/pkg/model"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols"
-	"github.com/projectdiscovery/nuclei/v3/pkg/utils/stats"
-	"github.com/projectdiscovery/nuclei/v3/pkg/workflows"
 )
 
 // compileWorkflow compiles the workflow for execution

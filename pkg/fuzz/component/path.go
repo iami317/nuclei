@@ -2,12 +2,12 @@ package component
 
 import (
 	"context"
+	"github.com/projectdiscovery/retryablehttp-go"
+	mapsutil "github.com/projectdiscovery/utils/maps"
 	"strconv"
 	"strings"
 
-	"github.com/projectdiscovery/nuclei/v3/pkg/fuzz/dataformat"
-	"github.com/projectdiscovery/retryablehttp-go"
-	"github.com/projectdiscovery/utils/maps"
+	"github.com/iami317/nuclei/v3/pkg/fuzz/dataformat"
 	urlutil "github.com/projectdiscovery/utils/url"
 )
 

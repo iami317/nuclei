@@ -4,11 +4,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/iami317/nuclei/v3/pkg/catalog/disk"
+	"github.com/iami317/nuclei/v3/pkg/types"
 	"github.com/stretchr/testify/require"
-	"gopkg.in/yaml.v2"
-
-	"github.com/projectdiscovery/nuclei/v3/pkg/catalog/disk"
-	"github.com/projectdiscovery/nuclei/v3/pkg/types"
 )
 
 func TestBatteringRamGenerator(t *testing.T) {

@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	nuclei "github.com/projectdiscovery/nuclei/v3/lib"
+	nuclei "github.com/iami317/nuclei/v3/lib"
 	"github.com/remeh/sizedwaitgroup"
 )
 

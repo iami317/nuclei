@@ -3,14 +3,14 @@ package loader
 import (
 	"bufio"
 	"fmt"
+	"github.com/projectdiscovery/retryablehttp-go"
 	"net/url"
 	"strings"
 
 	"github.com/pkg/errors"
 
-	"github.com/projectdiscovery/nuclei/v3/pkg/templates/extensions"
-	"github.com/projectdiscovery/nuclei/v3/pkg/utils"
-	"github.com/projectdiscovery/retryablehttp-go"
+	"github.com/iami317/nuclei/v3/pkg/templates/extensions"
+	"github.com/iami317/nuclei/v3/pkg/utils"
 	stringsutil "github.com/projectdiscovery/utils/strings"
 )
 

@@ -6,15 +6,15 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/projectdiscovery/retryablehttp-go"
 	"io"
 	"net/http"
 	"time"
 
 	"github.com/pkg/errors"
 
-	"github.com/projectdiscovery/nuclei/v3/pkg/output"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/protocolstate"
-	"github.com/projectdiscovery/retryablehttp-go"
+	"github.com/iami317/nuclei/v3/pkg/output"
+	"github.com/iami317/nuclei/v3/pkg/protocols/common/protocolstate"
 	"github.com/projectdiscovery/useragent"
 )
 
@@ -131,8 +131,8 @@ func (exporter *Exporter) Export(event *output.ResultEvent) error {
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close() 
-	
+	defer res.Body.Close()
+
 	b, err = io.ReadAll(res.Body)
 	if err != nil {
 		return errors.New(err.Error() + "error thrown by elasticsearch " + string(b))

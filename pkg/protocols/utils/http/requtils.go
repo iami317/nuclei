@@ -1,12 +1,12 @@
 package httputil
 
 import (
+	"github.com/projectdiscovery/retryablehttp-go"
 	"regexp"
 	"strings"
 
-	"github.com/projectdiscovery/nuclei/v3/pkg/types"
-	"github.com/projectdiscovery/nuclei/v3/pkg/types/scanstrategy"
-	"github.com/projectdiscovery/retryablehttp-go"
+	"github.com/iami317/nuclei/v3/pkg/types"
+	"github.com/iami317/nuclei/v3/pkg/types/scanstrategy"
 	urlutil "github.com/projectdiscovery/utils/url"
 )
 

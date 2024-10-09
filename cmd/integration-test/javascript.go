@@ -4,8 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/ory/dockertest/v3"
-	"github.com/projectdiscovery/nuclei/v3/pkg/testutils"
+	"github.com/iami317/nuclei/v3/pkg/testutils"
 	osutils "github.com/projectdiscovery/utils/os"
 	"go.uber.org/multierr"
 )

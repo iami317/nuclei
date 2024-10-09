@@ -2,29 +2,28 @@ package headless
 
 import (
 	"fmt"
+	"github.com/projectdiscovery/retryablehttp-go"
 	"net/url"
 	"strings"
 	"time"
 
-	"github.com/projectdiscovery/retryablehttp-go"
-
 	"github.com/pkg/errors"
 	"golang.org/x/exp/maps"
 
+	"github.com/iami317/nuclei/v3/pkg/fuzz"
+	"github.com/iami317/nuclei/v3/pkg/output"
+	"github.com/iami317/nuclei/v3/pkg/protocols"
+	"github.com/iami317/nuclei/v3/pkg/protocols/common/contextargs"
+	"github.com/iami317/nuclei/v3/pkg/protocols/common/generators"
+	"github.com/iami317/nuclei/v3/pkg/protocols/common/helpers/eventcreator"
+	"github.com/iami317/nuclei/v3/pkg/protocols/common/helpers/responsehighlighter"
+	"github.com/iami317/nuclei/v3/pkg/protocols/common/interactsh"
+	"github.com/iami317/nuclei/v3/pkg/protocols/common/utils/vardump"
+	"github.com/iami317/nuclei/v3/pkg/protocols/headless/engine"
+	protocolutils "github.com/iami317/nuclei/v3/pkg/protocols/utils"
+	templateTypes "github.com/iami317/nuclei/v3/pkg/templates/types"
+	"github.com/iami317/nuclei/v3/pkg/types"
 	"github.com/projectdiscovery/gologger"
-	"github.com/projectdiscovery/nuclei/v3/pkg/fuzz"
-	"github.com/projectdiscovery/nuclei/v3/pkg/output"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/contextargs"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/generators"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/helpers/eventcreator"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/helpers/responsehighlighter"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/interactsh"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/utils/vardump"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/headless/engine"
-	protocolutils "github.com/projectdiscovery/nuclei/v3/pkg/protocols/utils"
-	templateTypes "github.com/projectdiscovery/nuclei/v3/pkg/templates/types"
-	"github.com/projectdiscovery/nuclei/v3/pkg/types"
 	urlutil "github.com/projectdiscovery/utils/url"
 )
 
@@ -186,7 +185,7 @@ func (request *Request) executeRequestWithPayloads(input *contextargs.Context, p
 	header := out.GetOrDefault("header", "").(string)
 
 	// NOTE(dwisiswant0): `status_code` key should be an integer type.
-	// Ref: https://github.com/projectdiscovery/nuclei/pull/5545#discussion_r1721291013
+	// Ref: https://github.com/iami317/nuclei/pull/5545#discussion_r1721291013
 	statusCode := out.GetOrDefault("status_code", "").(string)
 
 	outputEvent := request.responseToDSLMap(responseBody, header, statusCode, reqBuilder.String(), input.MetaInput.Input, navigatedURL, page.DumpHistory())

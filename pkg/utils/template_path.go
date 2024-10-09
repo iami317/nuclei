@@ -3,8 +3,8 @@ package utils
 import (
 	"strings"
 
-	"github.com/projectdiscovery/nuclei/v3/pkg/catalog/config"
-	"github.com/projectdiscovery/nuclei/v3/pkg/keys"
+	"github.com/iami317/nuclei/v3/pkg/catalog/config"
+	"github.com/iami317/nuclei/v3/pkg/keys"
 )
 
 const (

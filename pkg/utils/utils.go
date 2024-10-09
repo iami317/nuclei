@@ -3,13 +3,13 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"github.com/projectdiscovery/retryablehttp-go"
 	"io"
 	"net/url"
 	"strings"
 
 	"github.com/cespare/xxhash"
-	"github.com/projectdiscovery/nuclei/v3/pkg/catalog"
-	"github.com/projectdiscovery/retryablehttp-go"
+	"github.com/iami317/nuclei/v3/pkg/catalog"
 	mapsutil "github.com/projectdiscovery/utils/maps"
 	"golang.org/x/exp/constraints"
 )

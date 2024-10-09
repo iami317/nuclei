@@ -2,19 +2,19 @@ package flow
 
 import (
 	"fmt"
+	"github.com/kitabisa/go-ci"
 	"io"
 	"strconv"
 	"strings"
 	"sync/atomic"
 
 	"github.com/dop251/goja"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/generators"
-	"github.com/projectdiscovery/nuclei/v3/pkg/scan"
-	templateTypes "github.com/projectdiscovery/nuclei/v3/pkg/templates/types"
+	"github.com/iami317/nuclei/v3/pkg/protocols"
+	"github.com/iami317/nuclei/v3/pkg/protocols/common/generators"
+	"github.com/iami317/nuclei/v3/pkg/scan"
+	templateTypes "github.com/iami317/nuclei/v3/pkg/templates/types"
 
-	"github.com/kitabisa/go-ci"
-	"github.com/projectdiscovery/nuclei/v3/pkg/types"
+	"github.com/iami317/nuclei/v3/pkg/types"
 	errorutil "github.com/projectdiscovery/utils/errors"
 	fileutil "github.com/projectdiscovery/utils/file"
 	mapsutil "github.com/projectdiscovery/utils/maps"

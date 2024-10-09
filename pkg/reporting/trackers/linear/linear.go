@@ -6,19 +6,19 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/projectdiscovery/retryablehttp-go"
 	"io"
 	"net/http"
 
 	"github.com/shurcooL/graphql"
 
-	"github.com/projectdiscovery/nuclei/v3/pkg/model/types/severity"
-	"github.com/projectdiscovery/nuclei/v3/pkg/output"
-	"github.com/projectdiscovery/nuclei/v3/pkg/reporting/exporters/markdown/util"
-	"github.com/projectdiscovery/nuclei/v3/pkg/reporting/format"
-	"github.com/projectdiscovery/nuclei/v3/pkg/reporting/trackers/filters"
-	"github.com/projectdiscovery/nuclei/v3/pkg/reporting/trackers/linear/jsonutil"
-	"github.com/projectdiscovery/nuclei/v3/pkg/types"
-	"github.com/projectdiscovery/retryablehttp-go"
+	"github.com/iami317/nuclei/v3/pkg/model/types/severity"
+	"github.com/iami317/nuclei/v3/pkg/output"
+	"github.com/iami317/nuclei/v3/pkg/reporting/exporters/markdown/util"
+	"github.com/iami317/nuclei/v3/pkg/reporting/format"
+	"github.com/iami317/nuclei/v3/pkg/reporting/trackers/filters"
+	"github.com/iami317/nuclei/v3/pkg/reporting/trackers/linear/jsonutil"
+	"github.com/iami317/nuclei/v3/pkg/types"
 )
 
 // Integration is a client for linear issue tracker integration
