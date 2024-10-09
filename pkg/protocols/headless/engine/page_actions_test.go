@@ -18,10 +18,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/contextargs"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/protocolstate"
-	"github.com/projectdiscovery/nuclei/v3/pkg/testutils/testheadless"
-	"github.com/projectdiscovery/nuclei/v3/pkg/types"
+	"github.com/iami317/nuclei/v3/pkg/protocols/common/contextargs"
+	"github.com/iami317/nuclei/v3/pkg/protocols/common/protocolstate"
+	"github.com/iami317/nuclei/v3/pkg/testutils/testheadless"
+	"github.com/iami317/nuclei/v3/pkg/types"
 	stringsutil "github.com/projectdiscovery/utils/strings"
 )
 

@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/iami317/nuclei/v3/pkg/protocols/http/httpclientpool"
+	"github.com/iami317/nuclei/v3/pkg/types/nucleierr"
 	"github.com/projectdiscovery/fastdialer/fastdialer"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/http/httpclientpool"
-	"github.com/projectdiscovery/nuclei/v3/pkg/types/nucleierr"
 	"github.com/projectdiscovery/retryablehttp-go"
 	"github.com/projectdiscovery/utils/errkit"
 	iputil "github.com/projectdiscovery/utils/ip"

@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/projectdiscovery/nuclei/v3/pkg/testutils"
+	"github.com/iami317/nuclei/v3/pkg/testutils"
 	errorutil "github.com/projectdiscovery/utils/errors"
 )
 

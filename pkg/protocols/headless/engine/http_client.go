@@ -11,10 +11,10 @@ import (
 
 	"golang.org/x/net/proxy"
 
+	"github.com/iami317/nuclei/v3/pkg/protocols/common/protocolstate"
+	"github.com/iami317/nuclei/v3/pkg/protocols/utils"
+	"github.com/iami317/nuclei/v3/pkg/types"
 	"github.com/projectdiscovery/fastdialer/fastdialer/ja3/impersonate"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/protocolstate"
-	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/utils"
-	"github.com/projectdiscovery/nuclei/v3/pkg/types"
 )
 
 // newHttpClient creates a new http client for headless communication with a timeout
