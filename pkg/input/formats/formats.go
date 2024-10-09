@@ -2,12 +2,12 @@ package formats
 
 import (
 	"errors"
-	"gopkg.in/yaml.v2"
 	"os"
 	"strings"
 
-	"github.com/iami317/nuclei/v3/pkg/input/types"
+	"github.com/projectdiscovery/nuclei/v3/pkg/input/types"
 	fileutil "github.com/projectdiscovery/utils/file"
+	"gopkg.in/yaml.v3"
 )
 
 // ParseReqRespCallback is a callback function for discovered raw requests

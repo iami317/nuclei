@@ -2,10 +2,10 @@ package component
 
 import (
 	"context"
-	"github.com/projectdiscovery/retryablehttp-go"
 	"strings"
 
-	"github.com/iami317/nuclei/v3/pkg/fuzz/dataformat"
+	"github.com/projectdiscovery/nuclei/v3/pkg/fuzz/dataformat"
+	"github.com/projectdiscovery/retryablehttp-go"
 )
 
 // Header is a component for a request header

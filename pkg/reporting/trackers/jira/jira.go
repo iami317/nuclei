@@ -2,20 +2,20 @@ package jira
 
 import (
 	"fmt"
-	"github.com/projectdiscovery/retryablehttp-go"
 	"io"
 	"net/url"
 	"strings"
 	"sync"
 
+	"github.com/andygrunwald/go-jira"
 	"github.com/trivago/tgo/tcontainer"
 
-	"github.com/andygrunwald/go-jira"
-	"github.com/iami317/nuclei/v3/pkg/output"
-	"github.com/iami317/nuclei/v3/pkg/reporting/exporters/markdown/util"
-	"github.com/iami317/nuclei/v3/pkg/reporting/format"
-	"github.com/iami317/nuclei/v3/pkg/reporting/trackers/filters"
 	"github.com/projectdiscovery/gologger"
+	"github.com/projectdiscovery/nuclei/v3/pkg/output"
+	"github.com/projectdiscovery/nuclei/v3/pkg/reporting/exporters/markdown/util"
+	"github.com/projectdiscovery/nuclei/v3/pkg/reporting/format"
+	"github.com/projectdiscovery/nuclei/v3/pkg/reporting/trackers/filters"
+	"github.com/projectdiscovery/retryablehttp-go"
 	"github.com/projectdiscovery/utils/ptr"
 )
 

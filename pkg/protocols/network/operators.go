@@ -3,14 +3,14 @@ package network
 import (
 	"time"
 
-	"github.com/iami317/nuclei/v3/pkg/model"
-	"github.com/iami317/nuclei/v3/pkg/operators"
-	"github.com/iami317/nuclei/v3/pkg/operators/extractors"
-	"github.com/iami317/nuclei/v3/pkg/operators/matchers"
-	"github.com/iami317/nuclei/v3/pkg/output"
-	"github.com/iami317/nuclei/v3/pkg/protocols"
-	protocolutils "github.com/iami317/nuclei/v3/pkg/protocols/utils"
-	"github.com/iami317/nuclei/v3/pkg/types"
+	"github.com/projectdiscovery/nuclei/v3/pkg/model"
+	"github.com/projectdiscovery/nuclei/v3/pkg/operators"
+	"github.com/projectdiscovery/nuclei/v3/pkg/operators/extractors"
+	"github.com/projectdiscovery/nuclei/v3/pkg/operators/matchers"
+	"github.com/projectdiscovery/nuclei/v3/pkg/output"
+	"github.com/projectdiscovery/nuclei/v3/pkg/protocols"
+	protocolutils "github.com/projectdiscovery/nuclei/v3/pkg/protocols/utils"
+	"github.com/projectdiscovery/nuclei/v3/pkg/types"
 )
 
 // Match matches a generic data response again a given matcher

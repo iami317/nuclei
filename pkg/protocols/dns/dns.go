@@ -6,12 +6,12 @@ import (
 	"github.com/miekg/dns"
 	"github.com/pkg/errors"
 
-	"github.com/iami317/nuclei/v3/pkg/operators"
-	"github.com/iami317/nuclei/v3/pkg/protocols"
-	"github.com/iami317/nuclei/v3/pkg/protocols/common/expressions"
-	"github.com/iami317/nuclei/v3/pkg/protocols/common/generators"
-	"github.com/iami317/nuclei/v3/pkg/protocols/common/replacer"
-	"github.com/iami317/nuclei/v3/pkg/protocols/dns/dnsclientpool"
+	"github.com/projectdiscovery/nuclei/v3/pkg/operators"
+	"github.com/projectdiscovery/nuclei/v3/pkg/protocols"
+	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/expressions"
+	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/generators"
+	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/replacer"
+	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/dns/dnsclientpool"
 	"github.com/projectdiscovery/retryabledns"
 	fileutil "github.com/projectdiscovery/utils/file"
 )

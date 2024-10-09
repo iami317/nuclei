@@ -4,10 +4,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/iami317/nuclei/v3/pkg/model"
-	"github.com/iami317/nuclei/v3/pkg/model/types/severity"
-	"github.com/iami317/nuclei/v3/pkg/model/types/stringslice"
-	"github.com/iami317/nuclei/v3/pkg/reporting/exporters/markdown/util"
+	"github.com/projectdiscovery/nuclei/v3/pkg/model"
+	"github.com/projectdiscovery/nuclei/v3/pkg/model/types/severity"
+	"github.com/projectdiscovery/nuclei/v3/pkg/model/types/stringslice"
+	"github.com/projectdiscovery/nuclei/v3/pkg/reporting/exporters/markdown/util"
 	"github.com/stretchr/testify/require"
 )
 

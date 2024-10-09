@@ -3,11 +3,12 @@ package smb
 import (
 	"context"
 	"fmt"
-	"github.com/iami317/nuclei/v3/pkg/protocols/common/protocolstate"
+	"time"
+
 	"github.com/praetorian-inc/fingerprintx/pkg/plugins"
 	"github.com/projectdiscovery/go-smb2"
+	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/protocolstate"
 	"github.com/zmap/zgrab2/lib/smb/smb"
-	"time"
 )
 
 type (

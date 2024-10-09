@@ -11,14 +11,14 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/iami317/nuclei/v3/pkg/model"
-	"github.com/iami317/nuclei/v3/pkg/model/types/severity"
-	"github.com/iami317/nuclei/v3/pkg/operators"
-	"github.com/iami317/nuclei/v3/pkg/operators/extractors"
-	"github.com/iami317/nuclei/v3/pkg/operators/matchers"
-	"github.com/iami317/nuclei/v3/pkg/output"
-	"github.com/iami317/nuclei/v3/pkg/protocols/common/contextargs"
-	"github.com/iami317/nuclei/v3/pkg/testutils"
+	"github.com/projectdiscovery/nuclei/v3/pkg/model"
+	"github.com/projectdiscovery/nuclei/v3/pkg/model/types/severity"
+	"github.com/projectdiscovery/nuclei/v3/pkg/operators"
+	"github.com/projectdiscovery/nuclei/v3/pkg/operators/extractors"
+	"github.com/projectdiscovery/nuclei/v3/pkg/operators/matchers"
+	"github.com/projectdiscovery/nuclei/v3/pkg/output"
+	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/contextargs"
+	"github.com/projectdiscovery/nuclei/v3/pkg/testutils"
 )
 
 func TestNetworkExecuteWithResults(t *testing.T) {

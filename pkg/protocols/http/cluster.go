@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/cespare/xxhash"
-	"github.com/iami317/nuclei/v3/pkg/utils"
+	"github.com/projectdiscovery/nuclei/v3/pkg/utils"
 )
 
 // TmplClusterKey generates a unique key for the request

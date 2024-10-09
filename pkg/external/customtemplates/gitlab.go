@@ -3,14 +3,14 @@ package customtemplates
 import (
 	"context"
 	"encoding/base64"
-	"github.com/xanzy/go-gitlab"
 	"os"
 	"path/filepath"
 
-	"github.com/iami317/nuclei/v3/pkg/catalog/config"
-	"github.com/iami317/nuclei/v3/pkg/types"
 	"github.com/projectdiscovery/gologger"
+	"github.com/projectdiscovery/nuclei/v3/pkg/catalog/config"
+	"github.com/projectdiscovery/nuclei/v3/pkg/types"
 	errorutil "github.com/projectdiscovery/utils/errors"
+	"github.com/xanzy/go-gitlab"
 )
 
 var _ Provider = &customTemplateGitLabRepo{}

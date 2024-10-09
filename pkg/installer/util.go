@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/Masterminds/semver/v3"
 	"io"
 	"io/fs"
 	"net/http"
@@ -12,8 +11,9 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/iami317/nuclei/v3/pkg/catalog/config"
+	"github.com/Masterminds/semver/v3"
 	"github.com/projectdiscovery/gologger"
+	"github.com/projectdiscovery/nuclei/v3/pkg/catalog/config"
 	errorutil "github.com/projectdiscovery/utils/errors"
 )
 

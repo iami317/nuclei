@@ -2,17 +2,17 @@ package customtemplates
 
 import (
 	"context"
-	"github.com/go-git/go-git/v5"
 	httpclient "net/http"
 	"path/filepath"
 	"strings"
 
+	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/google/go-github/github"
-	"github.com/iami317/nuclei/v3/pkg/catalog/config"
-	"github.com/iami317/nuclei/v3/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/projectdiscovery/gologger"
+	"github.com/projectdiscovery/nuclei/v3/pkg/catalog/config"
+	"github.com/projectdiscovery/nuclei/v3/pkg/types"
 	fileutil "github.com/projectdiscovery/utils/file"
 	folderutil "github.com/projectdiscovery/utils/folder"
 	"golang.org/x/oauth2"

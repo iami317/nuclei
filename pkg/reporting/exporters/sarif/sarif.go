@@ -7,9 +7,9 @@ import (
 	"path"
 	"sync"
 
-	"github.com/iami317/nuclei/v3/pkg/catalog/config"
-	"github.com/iami317/nuclei/v3/pkg/output"
 	"github.com/pkg/errors"
+	"github.com/projectdiscovery/nuclei/v3/pkg/catalog/config"
+	"github.com/projectdiscovery/nuclei/v3/pkg/output"
 	"github.com/projectdiscovery/sarif"
 )
 
@@ -55,7 +55,7 @@ func (exporter *Exporter) addToolDetails() {
 		},
 		FullName:        "Nuclei " + config.Version,
 		SemanticVersion: config.Version,
-		DownloadURI:     "https://github.com/iami317/nuclei/releases",
+		DownloadURI:     "https://github.com/projectdiscovery/nuclei/releases",
 		Rules:           exporter.rules,
 	}
 	exporter.sarif.RegisterTool(driver)

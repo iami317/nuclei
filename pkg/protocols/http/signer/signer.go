@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/iami317/nuclei/v3/pkg/types"
+	"github.com/projectdiscovery/nuclei/v3/pkg/types"
 )
 
 // An Argument that can be passed to Signer

@@ -3,24 +3,24 @@ package http
 import (
 	"bytes"
 	"fmt"
-	"github.com/projectdiscovery/retryablehttp-go"
 	"strings"
 
 	"github.com/invopop/jsonschema"
 	json "github.com/json-iterator/go"
 	"github.com/pkg/errors"
 
-	"github.com/iami317/nuclei/v3/pkg/fuzz"
-	"github.com/iami317/nuclei/v3/pkg/operators"
-	"github.com/iami317/nuclei/v3/pkg/operators/matchers"
-	"github.com/iami317/nuclei/v3/pkg/protocols"
-	"github.com/iami317/nuclei/v3/pkg/protocols/common/expressions"
-	"github.com/iami317/nuclei/v3/pkg/protocols/common/generators"
-	"github.com/iami317/nuclei/v3/pkg/protocols/common/protocolstate"
-	"github.com/iami317/nuclei/v3/pkg/protocols/http/httpclientpool"
-	httputil "github.com/iami317/nuclei/v3/pkg/protocols/utils/http"
-	"github.com/iami317/nuclei/v3/pkg/utils/stats"
+	"github.com/projectdiscovery/nuclei/v3/pkg/fuzz"
+	"github.com/projectdiscovery/nuclei/v3/pkg/operators"
+	"github.com/projectdiscovery/nuclei/v3/pkg/operators/matchers"
+	"github.com/projectdiscovery/nuclei/v3/pkg/protocols"
+	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/expressions"
+	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/generators"
+	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/protocolstate"
+	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/http/httpclientpool"
+	httputil "github.com/projectdiscovery/nuclei/v3/pkg/protocols/utils/http"
+	"github.com/projectdiscovery/nuclei/v3/pkg/utils/stats"
 	"github.com/projectdiscovery/rawhttp"
+	"github.com/projectdiscovery/retryablehttp-go"
 	fileutil "github.com/projectdiscovery/utils/file"
 )
 
@@ -195,7 +195,7 @@ type Request struct {
 	//   ReqCondition automatically assigns numbers to requests and preserves their history.
 	//
 	//   This allows matching on them later for multi-request conditions.
-	// Deprecated: request condition will be detected automatically (https://github.com/iami317/nuclei/issues/2393)
+	// Deprecated: request condition will be detected automatically (https://github.com/projectdiscovery/nuclei/issues/2393)
 	ReqCondition bool `yaml:"req-condition,omitempty" json:"req-condition,omitempty" jsonschema:"title=preserve request history,description=Automatically assigns numbers to requests and preserves their history"`
 	// description: |
 	//   StopAtFirstMatch stops the execution of the requests and template as soon as a match is found.
@@ -440,7 +440,7 @@ func (request *Request) Compile(options *protocols.ExecutorOptions) error {
 		}
 	}
 	if len(request.Payloads) > 0 {
-		// Due to a known issue (https://github.com/iami317/nuclei/issues/5015),
+		// Due to a known issue (https://github.com/projectdiscovery/nuclei/issues/5015),
 		// dynamic extractors cannot be used with payloads. To address this,
 		// execution is handled by the standard engine without concurrency,
 		// achieved by setting the thread count to 0.

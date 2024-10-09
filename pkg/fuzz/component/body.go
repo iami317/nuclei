@@ -3,14 +3,14 @@ package component
 import (
 	"bytes"
 	"context"
-	"github.com/projectdiscovery/retryablehttp-go"
 	"io"
 	"strconv"
 	"strings"
 
-	"github.com/iami317/nuclei/v3/pkg/fuzz/dataformat"
 	"github.com/pkg/errors"
 	"github.com/projectdiscovery/gologger"
+	"github.com/projectdiscovery/nuclei/v3/pkg/fuzz/dataformat"
+	"github.com/projectdiscovery/retryablehttp-go"
 	readerutil "github.com/projectdiscovery/utils/reader"
 )
 

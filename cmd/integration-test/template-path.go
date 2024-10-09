@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/iami317/nuclei/v3/pkg/catalog/config"
-	"github.com/iami317/nuclei/v3/pkg/testutils"
+	"github.com/projectdiscovery/nuclei/v3/pkg/catalog/config"
+	"github.com/projectdiscovery/nuclei/v3/pkg/testutils"
 )
 
 func getTemplatePath() string {

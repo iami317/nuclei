@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/iami317/nuclei/v3/pkg/model/types/severity"
-	"github.com/iami317/nuclei/v3/pkg/types"
+	"github.com/projectdiscovery/nuclei/v3/pkg/model/types/severity"
+	"github.com/projectdiscovery/nuclei/v3/pkg/types"
 )
 
 func TestCreateReportingOptions(t *testing.T) {

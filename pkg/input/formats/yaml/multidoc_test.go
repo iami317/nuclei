@@ -3,7 +3,7 @@ package yaml
 import (
 	"testing"
 
-	"github.com/iami317/nuclei/v3/pkg/input/types"
+	"github.com/projectdiscovery/nuclei/v3/pkg/input/types"
 	"github.com/stretchr/testify/require"
 )
 

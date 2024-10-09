@@ -5,9 +5,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/iami317/nuclei/v3/pkg/protocols/http/signer"
+	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/http/signer"
 
-	"github.com/iami317/nuclei/v3/pkg/types"
+	"github.com/projectdiscovery/nuclei/v3/pkg/types"
 )
 
 var (

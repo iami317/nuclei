@@ -1,10 +1,10 @@
 package telnet
 
 import (
-	lib_telnet "github.com/iami317/nuclei/v3/pkg/js/libs/telnet"
+	lib_telnet "github.com/projectdiscovery/nuclei/v3/pkg/js/libs/telnet"
 
 	"github.com/dop251/goja"
-	"github.com/iami317/nuclei/v3/pkg/js/gojs"
+	"github.com/projectdiscovery/nuclei/v3/pkg/js/gojs"
 )
 
 var (

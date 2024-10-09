@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/iami317/nuclei/v3/pkg/types"
+	"github.com/projectdiscovery/nuclei/v3/pkg/types"
 )
 
 // CleanStructFieldJSONTag cleans struct json tag field

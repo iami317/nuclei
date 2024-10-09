@@ -3,7 +3,7 @@ package authprovider
 import (
 	"net/url"
 
-	"github.com/iami317/nuclei/v3/pkg/authprovider/authx"
+	"github.com/projectdiscovery/nuclei/v3/pkg/authprovider/authx"
 	urlutil "github.com/projectdiscovery/utils/url"
 )
 

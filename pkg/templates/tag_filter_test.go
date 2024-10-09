@@ -3,12 +3,12 @@ package templates
 import (
 	"testing"
 
-	"github.com/iami317/nuclei/v3/pkg/model"
-	"github.com/iami317/nuclei/v3/pkg/model/types/severity"
-	"github.com/iami317/nuclei/v3/pkg/model/types/stringslice"
-	"github.com/iami317/nuclei/v3/pkg/protocols/dns"
-	"github.com/iami317/nuclei/v3/pkg/protocols/http"
-	"github.com/iami317/nuclei/v3/pkg/templates/types"
+	"github.com/projectdiscovery/nuclei/v3/pkg/model"
+	"github.com/projectdiscovery/nuclei/v3/pkg/model/types/severity"
+	"github.com/projectdiscovery/nuclei/v3/pkg/model/types/stringslice"
+	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/dns"
+	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/http"
+	"github.com/projectdiscovery/nuclei/v3/pkg/templates/types"
 	"github.com/stretchr/testify/require"
 )
 

@@ -3,15 +3,15 @@ package templates
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/yaml.v2"
 	"io"
 
-	"github.com/iami317/nuclei/v3/pkg/catalog"
-	"github.com/iami317/nuclei/v3/pkg/catalog/config"
-	"github.com/iami317/nuclei/v3/pkg/utils"
-	"github.com/iami317/nuclei/v3/pkg/utils/stats"
-	yamlutil "github.com/iami317/nuclei/v3/pkg/utils/yaml"
+	"github.com/projectdiscovery/nuclei/v3/pkg/catalog"
+	"github.com/projectdiscovery/nuclei/v3/pkg/catalog/config"
+	"github.com/projectdiscovery/nuclei/v3/pkg/utils"
+	"github.com/projectdiscovery/nuclei/v3/pkg/utils/stats"
+	yamlutil "github.com/projectdiscovery/nuclei/v3/pkg/utils/yaml"
 	fileutil "github.com/projectdiscovery/utils/file"
+	"gopkg.in/yaml.v2"
 )
 
 type Parser struct {

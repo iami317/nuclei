@@ -2,17 +2,17 @@ package gitea
 
 import (
 	"fmt"
-	"github.com/projectdiscovery/retryablehttp-go"
 	"net/url"
 	"strconv"
 	"strings"
 
 	"code.gitea.io/sdk/gitea"
-	"github.com/iami317/nuclei/v3/pkg/output"
-	"github.com/iami317/nuclei/v3/pkg/reporting/exporters/markdown/util"
-	"github.com/iami317/nuclei/v3/pkg/reporting/format"
-	"github.com/iami317/nuclei/v3/pkg/reporting/trackers/filters"
 	"github.com/pkg/errors"
+	"github.com/projectdiscovery/nuclei/v3/pkg/output"
+	"github.com/projectdiscovery/nuclei/v3/pkg/reporting/exporters/markdown/util"
+	"github.com/projectdiscovery/nuclei/v3/pkg/reporting/format"
+	"github.com/projectdiscovery/nuclei/v3/pkg/reporting/trackers/filters"
+	"github.com/projectdiscovery/retryablehttp-go"
 )
 
 // Integration is a client for an issue tracker integration

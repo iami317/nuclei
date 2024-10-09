@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/iami317/nuclei/v3/pkg/js/libs/structs"
-	"github.com/iami317/nuclei/v3/pkg/protocols/common/protocolstate"
+	"github.com/projectdiscovery/nuclei/v3/pkg/js/libs/structs"
+	"github.com/projectdiscovery/nuclei/v3/pkg/protocols/common/protocolstate"
 	"github.com/projectdiscovery/utils/reader"
 )
 

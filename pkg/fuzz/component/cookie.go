@@ -3,10 +3,10 @@ package component
 import (
 	"context"
 	"fmt"
-	"github.com/projectdiscovery/retryablehttp-go"
 	"net/http"
 
-	"github.com/iami317/nuclei/v3/pkg/fuzz/dataformat"
+	"github.com/projectdiscovery/nuclei/v3/pkg/fuzz/dataformat"
+	"github.com/projectdiscovery/retryablehttp-go"
 	mapsutil "github.com/projectdiscovery/utils/maps"
 )
 
