@@ -50,7 +50,7 @@ func (e *Engine) ExecuteScanWithOpts(ctx context.Context, templatesList []*templ
 	totalReqAfterClustering := getRequestCount(finalTemplates) * int(target.Count())
 
 	if !noCluster && totalReqAfterClustering < totalReqBeforeCluster {
-		gologger.Info().Msgf("Templates clustered: %d (Reduced %d Requests)", clusterCount, totalReqBeforeCluster-totalReqAfterClustering)
+		gologger.Verbose().Msgf("模板集群: %d (减少 %d 请求)", clusterCount, totalReqBeforeCluster-totalReqAfterClustering)
 	}
 
 	// 0 matches means no templates were found in the directory

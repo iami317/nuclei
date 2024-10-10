@@ -165,9 +165,9 @@ type ResultEvent struct {
 	Matched string `json:"matched-at,omitempty"`
 	// ExtractedResults contains the extraction result from the inputs.
 	ExtractedResults []string `json:"extracted-results,omitempty"`
-	// Request is the optional, dumped request for the match.
+	// Request是可选的、转储的匹配请求。
 	Request string `json:"request,omitempty"`
-	// Response is the optional, dumped response for the match.
+	// Response是匹配的可选转储响应。
 	Response string `json:"response,omitempty"`
 	// Metadata contains any optional metadata for the event
 	Metadata map[string]interface{} `json:"meta,omitempty"`
