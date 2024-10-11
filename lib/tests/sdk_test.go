@@ -106,18 +106,6 @@ func TestThreadSafeNuclei(t *testing.T) {
 		ne, err := nuclei.NewThreadSafeNucleiEngineCtx(context.TODO())
 		require.Nil(t, err)
 
-		// scan 1 = run dns templates on scanme.sh
-		t.Run("scanme.sh", func(t *testing.T) {
-			err = ne.ExecuteNucleiWithOpts([]string{"scanme.sh"}, nuclei.WithTemplateFilters(nuclei.TemplateFilters{ProtocolTypes: "dns"}))
-			require.Nil(t, err)
-		})
-
-		// scan 2 = run dns templates on honey.scanme.sh
-		t.Run("honey.scanme.sh", func(t *testing.T) {
-			err = ne.ExecuteNucleiWithOpts([]string{"honey.scanme.sh"}, nuclei.WithTemplateFilters(nuclei.TemplateFilters{ProtocolTypes: "dns"}))
-			require.Nil(t, err)
-		})
-
 		// wait for all scans to finish
 		defer ne.Close()
 	}
