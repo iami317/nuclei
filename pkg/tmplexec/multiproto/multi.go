@@ -1,6 +1,7 @@
 package multiproto
 
 import (
+	"fmt"
 	"strconv"
 	"sync/atomic"
 
@@ -62,6 +63,7 @@ func (m *MultiProtocol) ExecuteWithResults(ctx *scan.ScanContext) error {
 
 	// callback to process results from all protocols
 	multiProtoCallback := func(event *output.InternalWrappedEvent) {
+		fmt.Println("-------------multiProtoCallback", event)
 		if event == nil {
 			return
 		}
