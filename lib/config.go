@@ -244,6 +244,7 @@ type VerbosityOptions struct {
 	DebugRequest  bool // show request in debug output
 	DebugResponse bool // show response in debug output
 	ShowVarDump   bool // show variable dumps in output
+	MatcherStatus bool
 }
 
 // WithVerbosity allows setting verbosity options of (internal) nuclei engine
@@ -258,6 +259,7 @@ func WithVerbosity(opts VerbosityOptions) NucleiSDKOptions {
 		e.opts.Debug = opts.Debug
 		e.opts.DebugRequests = opts.DebugRequest
 		e.opts.DebugResponse = opts.DebugResponse
+		e.opts.MatcherStatus = opts.MatcherStatus
 		if opts.ShowVarDump {
 			vardump.EnableVarDump = true
 		}
