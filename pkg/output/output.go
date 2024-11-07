@@ -132,30 +132,29 @@ func (iwe *InternalWrappedEvent) SetOperatorResult(operatorResult *operators.Res
 
 // ResultEvent is a wrapped result event for a single nuclei output.
 type ResultEvent struct {
-	// Template is the relative filename for the template
+	// Template是模板的相对文件名
 	Template string `json:"template,omitempty"`
-	// TemplateURL is the URL of the template for the result inside the nuclei
-	// templates repository if it belongs to the repository.
+	// TemplateURL是结果在核模板存储库中的模板的URL，如果它属于存储库的话。
 	TemplateURL string `json:"template-url,omitempty"`
-	// TemplateID is the ID of the template for the result.
+	// TemplateID是结果的模板ID。
 	TemplateID string `json:"template-id"`
-	// TemplatePath is the path of template
+	// TemplatePath为模板路径
 	TemplatePath string `json:"template-path,omitempty"`
-	// TemplateEncoded is the base64 encoded template
+	// TemplateEncoded是base64编码的模板
 	TemplateEncoded string `json:"template-encoded,omitempty"`
-	// Info contains information block of the template for the result.
+	// Info包含结果模板的信息块。
 	Info model.Info `json:"info,inline"`
-	// MatcherName is the name of the matcher matched if any.
+	// MatcherName是匹配的匹配器的名称（如果有的话）。
 	MatcherName string `json:"matcher-name,omitempty"`
-	// ExtractorName is the name of the extractor matched if any.
+	// ExtractorName是匹配的提取器的名称（如果有）。
 	ExtractorName string `json:"extractor-name,omitempty"`
-	// Type is the type of the result event.
+	// Type是结果事件的类型。
 	Type string `json:"type"`
-	// Host is the host input on which match was found.
+	// Host是找到匹配的主机输入。
 	Host string `json:"host,omitempty"`
-	// Port is port of the host input on which match was found (if applicable).
+	// Port是找到匹配的主机输入的端口（如果适用）。
 	Port string `json:"port,omitempty"`
-	// Scheme is the scheme of the host input on which match was found (if applicable).
+	// Scheme是找到匹配的主机输入的模式（如果适用）。
 	Scheme string `json:"scheme,omitempty"`
 	// URL is the Base URL of the host input on which match was found (if applicable).
 	URL string `json:"url,omitempty"`
