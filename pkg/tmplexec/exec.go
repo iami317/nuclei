@@ -13,7 +13,6 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/operators/common/dsl"
 	"github.com/iami317/nuclei/v3/pkg/output"
 	"github.com/iami317/nuclei/v3/pkg/protocols"
-	"github.com/iami317/nuclei/v3/pkg/protocols/common/helpers/writer"
 	"github.com/iami317/nuclei/v3/pkg/scan"
 	"github.com/iami317/nuclei/v3/pkg/scan/events"
 	"github.com/iami317/nuclei/v3/pkg/tmplexec/flow"
@@ -136,7 +135,7 @@ func (e *TemplateExecuter) Execute(ctx *scan.ScanContext) (bool, error) {
 		e.options.RemoveTemplateCtx(ctx.Input.MetaInput)
 	}()
 
-	var lastMatcherEvent *output.InternalWrappedEvent
+	//var lastMatcherEvent *output.InternalWrappedEvent
 	writeFailureCallback := func(event *output.InternalWrappedEvent, matcherStatus bool) {
 		if !matched.Load() && matcherStatus {
 			if err := e.options.Output.WriteFailure(event); err != nil {
@@ -171,15 +170,19 @@ func (e *TemplateExecuter) Execute(ctx *scan.ScanContext) (bool, error) {
 		// If no results were found, and also interactsh is not being used
 		// in that case we can skip it, otherwise we've to show failure in
 		// case of matcher-status flag.
-		if !event.HasOperatorResult() && event.InternalEvent != nil {
-			lastMatcherEvent = event
-		} else {
-			if writer.WriteResult(event, e.options.Output, e.options.Progress, e.options.IssuesClient) {
-				matched.Store(true)
-			} else {
-				lastMatcherEvent = event
-			}
-		}
+		//if !event.HasOperatorResult() && event.InternalEvent != nil {
+		//	lastMatcherEvent = event
+		//} else {
+		//	if writer.WriteResult(event, e.options.Output, e.options.Progress, e.options.IssuesClient) {
+		//		matched.Store(true)
+		//	} else {
+		//		lastMatcherEvent = event
+		//	}
+		//}
+		event.Lock()
+		event.InternalEvent["error"] = getErrorCause(ctx.GenerateErrorMessage())
+		event.Unlock()
+		writeFailureCallback(event, e.options.Options.MatcherStatus)
 	}
 	var errx error
 
@@ -205,12 +208,13 @@ func (e *TemplateExecuter) Execute(ctx *scan.ScanContext) (bool, error) {
 	}
 	ctx.LogError(errx)
 
-	if lastMatcherEvent != nil {
-		lastMatcherEvent.Lock()
-		lastMatcherEvent.InternalEvent["error"] = getErrorCause(ctx.GenerateErrorMessage())
-		lastMatcherEvent.Unlock()
-		writeFailureCallback(lastMatcherEvent, e.options.Options.MatcherStatus)
-	}
+	//if lastMatcherEvent != nil {
+	//	fmt.Println(4444444)
+	//	lastMatcherEvent.Lock()
+	//	lastMatcherEvent.InternalEvent["error"] = getErrorCause(ctx.GenerateErrorMessage())
+	//	lastMatcherEvent.Unlock()
+	//	writeFailureCallback(lastMatcherEvent, e.options.Options.MatcherStatus)
+	//}
 
 	//TODO: this is a hacky way to handle the case where the callback is not called and matcher-status is true.
 	// This is a workaround and needs to be refactored.
