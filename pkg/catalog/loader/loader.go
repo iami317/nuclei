@@ -506,14 +506,15 @@ func (store *Store) LoadTemplatesWithTags(templatesList, tags []string) []*templ
 						if config.DefaultConfig.LogAllEvents {
 							gologger.Print().Msgf("[%v] Tampered/Unsigned template at %v.\n", aurora.Yellow("WRN").String(), templatePath)
 						}
-					} else if parsed.IsFuzzing() && !store.config.ExecutorOptions.Options.DAST {
-						stats.Increment(templates.ExludedDastTmplStats)
-						if config.DefaultConfig.LogAllEvents {
-							gologger.Print().Msgf("[%v] -dast flag is required for DAST template '%s'.\n", aurora.Yellow("WRN").String(), templatePath)
-						}
 					} else {
 						loadTemplate(parsed)
 					}
+					//else if parsed.IsFuzzing() && !store.config.ExecutorOptions.Options.DAST {
+					//	stats.Increment(templates.ExludedDastTmplStats)
+					//	if config.DefaultConfig.LogAllEvents {
+					//		gologger.Print().Msgf("[%v] -dast flag is required for DAST template '%s'.\n", aurora.Yellow("WRN").String(), templatePath)
+					//	}
+					//}
 				}
 			}
 			if err != nil {
