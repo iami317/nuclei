@@ -56,7 +56,7 @@ func (e *NucleiEngine) applyRequiredDefaults(ctx context.Context) {
 		} else {
 			sb.WriteString(event.Host)
 		}
-		fmt.Println(sb.String())
+		//fmt.Println(sb.String())
 	}
 	if e.onFailureCallback != nil {
 		mockoutput.FailureCallback = e.onFailureCallback
