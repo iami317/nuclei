@@ -21,7 +21,6 @@ import (
 	"github.com/logrusorgru/aurora"
 
 	"github.com/iami317/nuclei/v3/internal/colorizer"
-	"github.com/iami317/nuclei/v3/pkg/catalog/config"
 	"github.com/iami317/nuclei/v3/pkg/model"
 	"github.com/iami317/nuclei/v3/pkg/model/types/severity"
 	"github.com/iami317/nuclei/v3/pkg/operators"
@@ -486,7 +485,7 @@ var maxTemplateFileSizeForEncoding = unitutils.Mega
 
 func (w *StandardWriter) encodeTemplate(templatePath string) string {
 	data, err := os.ReadFile(templatePath)
-	if err == nil && !w.omitTemplate && len(data) <= maxTemplateFileSizeForEncoding && config.DefaultConfig.IsCustomTemplate(templatePath) {
+	if err == nil && !w.omitTemplate && len(data) <= maxTemplateFileSizeForEncoding {
 		return base64.StdEncoding.EncodeToString(data)
 	}
 	return ""

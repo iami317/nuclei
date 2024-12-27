@@ -231,27 +231,5 @@ func (e *NucleiEngine) init(ctx context.Context) error {
 	// and also upgrade templates to latest version if available
 	installer.NucleiSDKVersionCheck()
 
-	if DefaultConfig.CanCheckForUpdates() {
-		return e.processUpdateCheckResults()
-	}
 	return nil
-}
-
-type syncOnce struct {
-	sync.Once
-}
-
-var updateCheckInstance = &syncOnce{}
-
-// processUpdateCheckResults processes update check results
-func (e *NucleiEngine) processUpdateCheckResults() error {
-	var err error
-	updateCheckInstance.Do(func() {
-		if e.onUpdateAvailableCallback != nil {
-			e.onUpdateAvailableCallback(config.DefaultConfig.LatestNucleiTemplatesVersion)
-		}
-		tm := installer.TemplateManager{}
-		err = tm.UpdateIfOutdated()
-	})
-	return err
 }

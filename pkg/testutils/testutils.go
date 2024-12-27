@@ -205,7 +205,7 @@ var maxTemplateFileSizeForEncoding = unitutils.Mega
 
 func (w *MockOutputWriter) encodeTemplate(templatePath string) string {
 	data, err := os.ReadFile(templatePath)
-	if err == nil && !w.omitTemplate && len(data) <= maxTemplateFileSizeForEncoding && config.DefaultConfig.IsCustomTemplate(templatePath) {
+	if err == nil && !w.omitTemplate && len(data) <= maxTemplateFileSizeForEncoding {
 		return base64.StdEncoding.EncodeToString(data)
 	}
 	return ""

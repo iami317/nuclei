@@ -99,8 +99,6 @@ func GetNucleiTemplatesIndex() (map[string]string, error) {
 		gologger.Error().Msgf("failed to read index file creating new one: %v", err)
 	}
 
-	ignoreDirs := DefaultConfig.GetAllCustomTemplateDirs()
-
 	// empty index if templates are not installed
 	if !fileutil.FolderExists(DefaultConfig.TemplatesDirectory) {
 		return index, nil
@@ -110,7 +108,7 @@ func GetNucleiTemplatesIndex() (map[string]string, error) {
 			gologger.Verbose().Msgf("failed to walk path=%v err=%v", path, err)
 			return nil
 		}
-		if d.IsDir() || !IsTemplate(path) || stringsutil.ContainsAny(path, ignoreDirs...) {
+		if d.IsDir() || !IsTemplate(path) {
 			return nil
 		}
 		// get template id from file

@@ -80,9 +80,6 @@ func (t *TemplateManager) UpdateIfOutdated() error {
 	if !fileutil.FolderExists(config.DefaultConfig.TemplatesDirectory) {
 		return t.FreshInstallIfNotExists()
 	}
-	if config.DefaultConfig.NeedsTemplateUpdate() {
-		return t.updateTemplatesAt(config.DefaultConfig.TemplatesDirectory)
-	}
 	return nil
 }
 
@@ -384,10 +381,6 @@ func (t *TemplateManager) calculateChecksumMap(dir string) (map[string]string, e
 	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
-		}
-		// skip checksums of custom templates i.e github and s3
-		if stringsutil.HasPrefixAny(path, config.DefaultConfig.GetAllCustomTemplateDirs()...) {
-			return nil
 		}
 
 		// current implementations calculates checksums of all files (including .yaml,.txt,.md,.json etc)
