@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/iami317/nuclei/v3/pkg/catalog/config"
-	pdcpauth "github.com/projectdiscovery/utils/auth/pdcp"
 	updateutils "github.com/projectdiscovery/utils/update"
 )
 
@@ -27,10 +26,4 @@ func showBanner() {
 func NucleiToolUpdateCallback() {
 	showBanner()
 	updateutils.GetUpdateToolCallback(config.BinaryName, config.Version)()
-}
-
-// AuthWithPDCP is used to authenticate with PDCP
-func AuthWithPDCP() {
-	showBanner()
-	pdcpauth.CheckNValidateCredentials(config.BinaryName)
 }

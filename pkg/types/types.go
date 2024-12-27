@@ -381,16 +381,6 @@ type Options struct {
 	EnableCodeTemplates bool
 	// DisableUnsignedTemplates disables processing of unsigned templates
 	DisableUnsignedTemplates bool
-	// Disables cloud upload
-	EnableCloudUpload bool
-	// ScanID is the scan ID to use for cloud upload
-	ScanID string
-	// ScanName is the name of the scan to be uploaded
-	ScanName string
-	// ScanUploadFile is the jsonl file to upload scan results to cloud
-	ScanUploadFile string
-	// TeamID is the team ID to use for cloud upload
-	TeamID string
 	// JsConcurrency is the number of concurrent js routines to run
 	JsConcurrency int
 	// SecretsFile is file containing secrets for nuclei

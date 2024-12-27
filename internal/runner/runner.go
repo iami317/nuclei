@@ -3,7 +3,6 @@ package runner
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
@@ -13,7 +12,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/iami317/nuclei/v3/internal/pdcp"
 	"github.com/iami317/nuclei/v3/pkg/authprovider"
 	"github.com/iami317/nuclei/v3/pkg/fuzz/frequency"
 	"github.com/iami317/nuclei/v3/pkg/input/provider"
@@ -70,7 +68,6 @@ var (
 	// HideAutoSaveMsg is a global variable to hide the auto-save message
 	HideAutoSaveMsg = false
 	// EnableCloudUpload is global variable to enable cloud upload
-	EnableCloudUpload = false
 )
 
 // Runner is a client for running the enumeration process.
@@ -248,14 +245,6 @@ func New(options *types.Options) (*Runner, error) {
 	}
 	runner.inputProvider = inputProvider
 
-	// Create the output file if asked
-	outputWriter, err := output.NewStandardWriter(options)
-	if err != nil {
-		return nil, errors.Wrap(err, "could not create output file")
-	}
-	// setup a proxy writer to automatically upload results to PDCP
-	runner.output = runner.setupPDCPUpload(outputWriter)
-
 	if options.JSONL && options.EnableProgressBar {
 		options.StatsJSON = true
 	}
@@ -391,45 +380,6 @@ func (r *Runner) Close() {
 	if r.tmpDir != "" {
 		_ = os.RemoveAll(r.tmpDir)
 	}
-}
-
-// setupPDCPUpload sets up the PDCP upload writer
-// by creating a new writer and returning it
-func (r *Runner) setupPDCPUpload(writer output.Writer) output.Writer {
-	// if scanid is given implicitly consider that scan upload is enabled
-	if r.options.ScanID != "" {
-		r.options.EnableCloudUpload = true
-	}
-	if !(r.options.EnableCloudUpload || EnableCloudUpload) {
-		r.pdcpUploadErrMsg = fmt.Sprintf("[%v] Scan results upload to cloud is disabled.", r.colorizer.BrightYellow("WRN"))
-		return writer
-	}
-	color := aurora.NewAurora(!r.options.NoColor)
-	h := &pdcpauth.PDCPCredHandler{}
-	creds, err := h.GetCreds()
-	if err != nil {
-		if err != pdcpauth.ErrNoCreds && !HideAutoSaveMsg {
-			gologger.Verbose().Msgf("Could not get credentials for cloud upload: %s\n", err)
-		}
-		r.pdcpUploadErrMsg = fmt.Sprintf("[%v] To view results on Cloud Dashboard, Configure API key from %v", color.BrightYellow("WRN"), pdcpauth.DashBoardURL)
-		return writer
-	}
-	uploadWriter, err := pdcp.NewUploadWriter(context.Background(), creds)
-	if err != nil {
-		r.pdcpUploadErrMsg = fmt.Sprintf("[%v] PDCP (%v) Auto-Save Failed: %s\n", color.BrightYellow("WRN"), pdcpauth.DashBoardURL, err)
-		return writer
-	}
-	if r.options.ScanID != "" {
-		// ignore and use empty scan id if invalid
-		_ = uploadWriter.SetScanID(r.options.ScanID)
-	}
-	if r.options.ScanName != "" {
-		uploadWriter.SetScanName(r.options.ScanName)
-	}
-	if r.options.TeamID != "" {
-		uploadWriter.SetTeamID(r.options.TeamID)
-	}
-	return output.NewMultiWriter(writer, uploadWriter)
 }
 
 // RunEnumeration sets up the input layer for giving input nuclei.
@@ -793,52 +743,6 @@ func (r *Runner) SaveResumeConfig(path string) error {
 	return os.WriteFile(path, data, permissionutil.ConfigFilePermission)
 }
 
-// upload existing scan results to cloud with progress
-func UploadResultsToCloud(options *types.Options) error {
-	h := &pdcpauth.PDCPCredHandler{}
-	creds, err := h.GetCreds()
-	if err != nil {
-		return errors.Wrap(err, "could not get credentials for cloud upload")
-	}
-	ctx := context.TODO()
-	uploadWriter, err := pdcp.NewUploadWriter(ctx, creds)
-	if err != nil {
-		return errors.Wrap(err, "could not create upload writer")
-	}
-	if options.ScanID != "" {
-		_ = uploadWriter.SetScanID(options.ScanID)
-	}
-	if options.ScanName != "" {
-		uploadWriter.SetScanName(options.ScanName)
-	}
-	if options.TeamID != "" {
-		uploadWriter.SetTeamID(options.TeamID)
-	}
-
-	// Open file to count the number of results first
-	file, err := os.Open(options.ScanUploadFile)
-	if err != nil {
-		return errors.Wrap(err, "could not open scan upload file")
-	}
-	defer file.Close()
-
-	gologger.Info().Msgf("Uploading scan results to cloud dashboard from %s", options.ScanUploadFile)
-	dec := json.NewDecoder(file)
-	for dec.More() {
-		var r output.ResultEvent
-		err := dec.Decode(&r)
-		if err != nil {
-			gologger.Warning().Msgf("Could not decode jsonl: %s\n", err)
-			continue
-		}
-		if err = uploadWriter.Write(&r); err != nil {
-			gologger.Warning().Msgf("[%s] failed to upload: %s\n", r.TemplateID, err)
-		}
-	}
-	uploadWriter.Close()
-	return nil
-}
-
 type WalkFunc func(reflect.Value, reflect.StructField)
 
 // Walk traverses a struct and executes a callback function on each value in the struct.
@@ -890,5 +794,4 @@ func expandEndVars(f reflect.Value, fieldType reflect.StructField) {
 
 func init() {
 	HideAutoSaveMsg = env.GetEnvOrDefault("DISABLE_CLOUD_UPLOAD_WRN", false)
-	EnableCloudUpload = env.GetEnvOrDefault("ENABLE_CLOUD_UPLOAD", false)
 }
