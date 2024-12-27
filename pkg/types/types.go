@@ -463,17 +463,17 @@ func (options *Options) HasClientCertificates() bool {
 // DefaultOptions returns default options for nuclei
 func DefaultOptions() *Options {
 	return &Options{
-		RateLimit:               150,
+		RateLimit:               250,
 		RateLimitDuration:       time.Second,
 		BulkSize:                25,
-		TemplateThreads:         25,
+		TemplateThreads:         250,
 		HeadlessBulkSize:        10,
-		PayloadConcurrency:      25,
-		HeadlessTemplateThreads: 10,
+		PayloadConcurrency:      250,
+		HeadlessTemplateThreads: 100,
 		ProbeConcurrency:        50,
 		Timeout:                 5,
 		Retries:                 1,
-		MaxHostError:            30,
+		MaxHostError:            10,
 		ResponseReadSize:        10 * unitutils.Mega,
 		ResponseSaveSize:        unitutils.Mega,
 	}
