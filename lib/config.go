@@ -1,13 +1,7 @@
 package nuclei
 
 import (
-	"context"
-	"time"
-
-	"github.com/projectdiscovery/ratelimit"
-
 	"github.com/iami317/nuclei/v3/pkg/model/types/severity"
-	"github.com/iami317/nuclei/v3/pkg/protocols/common/interactsh"
 	"github.com/iami317/nuclei/v3/pkg/templates/types"
 )
 
@@ -82,76 +76,4 @@ func WithTemplateFilters(filters TemplateFilters) NucleiSDKOptions {
 		e.opts.IncludeConditions = filters.TemplateCondition
 		return nil
 	}
-}
-
-// InteractshOpts contains options for interactsh
-type InteractshOpts interactsh.Options
-
-// WithInteractshOptions sets interactsh options
-func WithInteractshOptions(opts InteractshOpts) NucleiSDKOptions {
-	return func(e *NucleiEngine) error {
-		if e.mode == threadSafe {
-			return ErrOptionsNotSupported.Msgf("WithInteractshOptions")
-		}
-		optsPtr := &opts
-		e.interactshOpts = (*interactsh.Options)(optsPtr)
-		return nil
-	}
-}
-
-// Concurrency options
-type Concurrency struct {
-	TemplateConcurrency           int // number of templates to run concurrently (per host in host-spray mode)
-	HostConcurrency               int // number of hosts to scan concurrently  (per template in template-spray mode)
-	HeadlessHostConcurrency       int // number of hosts to scan concurrently for headless templates  (per template in template-spray mode)
-	HeadlessTemplateConcurrency   int // number of templates to run concurrently for headless templates (per host in host-spray mode)
-	JavascriptTemplateConcurrency int // number of templates to run concurrently for javascript templates (per host in host-spray mode)
-	TemplatePayloadConcurrency    int // max concurrent payloads to run for a template (a good default is 25)
-	ProbeConcurrency              int // max concurrent http probes to run (a good default is 50)
-}
-
-// WithGlobalRateLimitCtx allows setting a global rate limit for the entire engine
-func WithGlobalRateLimitCtx(ctx context.Context, maxTokens int, duration time.Duration) NucleiSDKOptions {
-	return func(e *NucleiEngine) error {
-		e.opts.RateLimit = maxTokens
-		e.opts.RateLimitDuration = duration
-		e.rateLimiter = ratelimit.New(ctx, uint(e.opts.RateLimit), e.opts.RateLimitDuration)
-		return nil
-	}
-}
-
-// StatsOptions
-type StatsOptions struct {
-	Interval         int
-	JSON             bool
-	MetricServerPort int
-}
-
-// EnableStats enables Stats collection with defined interval(in sec) and callback
-// Note: callback is executed in a separate goroutine
-func EnableStatsWithOpts(opts StatsOptions) NucleiSDKOptions {
-	return func(e *NucleiEngine) error {
-		if e.mode == threadSafe {
-			return ErrOptionsNotSupported.Msgf("EnableStatsWithOpts")
-		}
-		if opts.Interval == 0 {
-			opts.Interval = 5 //sec
-		}
-		e.opts.StatsInterval = opts.Interval
-		e.enableStats = true
-		e.opts.StatsJSON = opts.JSON
-		e.opts.MetricsPort = opts.MetricServerPort
-		return nil
-	}
-}
-
-// VerbosityOptions
-type VerbosityOptions struct {
-	Verbose       bool // show verbose output
-	Silent        bool // show only results
-	Debug         bool // show debug output
-	DebugRequest  bool // show request in debug output
-	DebugResponse bool // show response in debug output
-	ShowVarDump   bool // show variable dumps in output
-	MatcherStatus bool
 }
