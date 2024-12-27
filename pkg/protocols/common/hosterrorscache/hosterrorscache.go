@@ -130,7 +130,7 @@ func (c *Cache) Check(protoType string, ctx *contextargs.Context) bool {
 
 	if existingCacheItem.errors.Load() >= int32(c.MaxHostError) {
 		existingCacheItem.Do(func() {
-			gologger.Info().Msgf("从目标列表中跳过%s，因为发现无响应 %d次", finalValue, existingCacheItem.errors.Load())
+			gologger.Debug().Msgf("从目标列表中跳过%s，因为发现无响应 %d次", finalValue, existingCacheItem.errors.Load())
 		})
 		return true
 	}
