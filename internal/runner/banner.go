@@ -3,7 +3,6 @@ package runner
 
 import (
 	"fmt"
-
 	"github.com/iami317/nuclei/v3/pkg/catalog/config"
 )
 
@@ -24,5 +23,4 @@ func showBanner() {
 // NucleiToolUpdateCallback updates nuclei binary/tool to latest version
 func NucleiToolUpdateCallback() {
 	showBanner()
-	//updateutils.GetUpdateToolCallback(config.BinaryName, config.Version)()
 }

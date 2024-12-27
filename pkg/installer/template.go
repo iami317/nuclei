@@ -2,7 +2,6 @@ package installer
 
 import (
 	"bytes"
-	"context"
 	"crypto/md5"
 	"fmt"
 	"io"
@@ -14,7 +13,6 @@ import (
 
 	"github.com/charmbracelet/glamour"
 	"github.com/iami317/nuclei/v3/pkg/catalog/config"
-	"github.com/iami317/nuclei/v3/pkg/external/customtemplates"
 	"github.com/olekukonko/tablewriter"
 	"github.com/projectdiscovery/gologger"
 	errorutil "github.com/projectdiscovery/utils/errors"
@@ -59,8 +57,7 @@ func (t *templateUpdateResults) String() string {
 // TemplateManager is a manager for templates.
 // It downloads / updates / installs templates.
 type TemplateManager struct {
-	CustomTemplates        *customtemplates.CustomTemplatesManager // optional if given tries to download custom templates
-	DisablePublicTemplates bool                                    // if true,
+	DisablePublicTemplates bool // if true,
 	// public templates are not downloaded from the GitHub nuclei-templates repository
 }
 
@@ -73,9 +70,6 @@ func (t *TemplateManager) FreshInstallIfNotExists() error {
 	gologger.Info().Msgf("nuclei-templates are not installed, installing...")
 	if err := t.installTemplatesAt(config.DefaultConfig.TemplatesDirectory); err != nil {
 		return errorutil.NewWithErr(err).Msgf("failed to install templates at %s", config.DefaultConfig.TemplatesDirectory)
-	}
-	if t.CustomTemplates != nil {
-		t.CustomTemplates.Download(context.TODO())
 	}
 	return nil
 }

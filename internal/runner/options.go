@@ -6,7 +6,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -32,7 +31,6 @@ import (
 	fileutil "github.com/projectdiscovery/utils/file"
 	"github.com/projectdiscovery/utils/generic"
 	logutil "github.com/projectdiscovery/utils/log"
-	stringsutil "github.com/projectdiscovery/utils/strings"
 )
 
 const (
@@ -56,9 +54,6 @@ func ConfigureOptions() error {
 func ParseOptions(options *types.Options) {
 	// Check if stdin pipe was given
 	options.Stdin = !options.DisableStdin && fileutil.HasStdin()
-
-	// Read the inputs from env variables that not passed by flag.
-	readEnvInputVars(options)
 
 	// Read the inputs and configure the logging
 	configureOutput(options)
@@ -119,11 +114,6 @@ func ParseOptions(options *types.Options) {
 		gologger.Fatal().Msgf("Could not initialize protocols: %s\n", err)
 	}
 
-	// Set GitHub token in env variable. runner.getGHClientWithToken() reads token from env
-	if options.GitHubToken != "" && os.Getenv("GITHUB_TOKEN") != options.GitHubToken {
-		os.Setenv("GITHUB_TOKEN", options.GitHubToken)
-	}
-
 	if options.UncoverQuery != nil {
 		options.Uncover = true
 		if len(options.UncoverEngine) == 0 {
@@ -178,29 +168,6 @@ func ValidateOptions(options *types.Options) error {
 		}
 		validateCertificatePaths(options.ClientCertFile, options.ClientKeyFile, options.ClientCAFile)
 	}
-	// Verify AWS secrets are passed if a S3 template bucket is passed
-	if options.AwsBucketName != "" && !options.AwsTemplateDisableDownload {
-		missing := validateMissingS3Options(options)
-		if missing != nil {
-			return fmt.Errorf("aws s3 bucket details are missing. Please provide %s", strings.Join(missing, ","))
-		}
-	}
-
-	// Verify Azure connection configuration is passed if the Azure template bucket is passed
-	if options.AzureContainerName != "" && !options.AzureTemplateDisableDownload {
-		missing := validateMissingAzureOptions(options)
-		if missing != nil {
-			return fmt.Errorf("azure connection details are missing. Please provide %s", strings.Join(missing, ","))
-		}
-	}
-
-	// Verify that all GitLab options are provided if the GitLab server or token is provided
-	if len(options.GitLabTemplateRepositoryIDs) != 0 && !options.GitLabTemplateDisableDownload {
-		missing := validateMissingGitLabOptions(options)
-		if missing != nil {
-			return fmt.Errorf("gitlab server details are missing. Please provide %s", strings.Join(missing, ","))
-		}
-	}
 
 	// verify that a valid ip version type was selected (4, 6)
 	if len(options.IPVersion) == 0 {
@@ -222,55 +189,6 @@ func ValidateOptions(options *types.Options) error {
 		return errors.New("ipv4 and/or ipv6 must be selected")
 	}
 	return nil
-}
-
-func validateMissingS3Options(options *types.Options) []string {
-	var missing []string
-	if options.AwsBucketName == "" {
-		missing = append(missing, "AWS_TEMPLATE_BUCKET")
-	}
-	if options.AwsAccessKey == "" {
-		missing = append(missing, "AWS_ACCESS_KEY")
-	}
-	if options.AwsSecretKey == "" {
-		missing = append(missing, "AWS_SECRET_KEY")
-	}
-	if options.AwsRegion == "" {
-		missing = append(missing, "AWS_REGION")
-	}
-	return missing
-}
-
-func validateMissingAzureOptions(options *types.Options) []string {
-	var missing []string
-	if options.AzureTenantID == "" {
-		missing = append(missing, "AZURE_TENANT_ID")
-	}
-	if options.AzureClientID == "" {
-		missing = append(missing, "AZURE_CLIENT_ID")
-	}
-	if options.AzureClientSecret == "" {
-		missing = append(missing, "AZURE_CLIENT_SECRET")
-	}
-	if options.AzureServiceURL == "" {
-		missing = append(missing, "AZURE_SERVICE_URL")
-	}
-	if options.AzureContainerName == "" {
-		missing = append(missing, "AZURE_CONTAINER_NAME")
-	}
-	return missing
-}
-
-func validateMissingGitLabOptions(options *types.Options) []string {
-	var missing []string
-	if options.GitLabToken == "" {
-		missing = append(missing, "GITLAB_TOKEN")
-	}
-	if len(options.GitLabTemplateRepositoryIDs) == 0 {
-		missing = append(missing, "GITLAB_REPOSITORY_IDS")
-	}
-
-	return missing
 }
 
 func createReportingOptions(options *types.Options) (*reporting.Options, error) {
@@ -391,75 +309,4 @@ func validateCertificatePaths(certificatePaths ...string) {
 			break
 		}
 	}
-}
-
-// Read the input from env and set options
-func readEnvInputVars(options *types.Options) {
-	options.GitHubToken = os.Getenv("GITHUB_TOKEN")
-	repolist := os.Getenv("GITHUB_TEMPLATE_REPO")
-	if repolist != "" {
-		options.GitHubTemplateRepo = append(options.GitHubTemplateRepo, stringsutil.SplitAny(repolist, ",")...)
-	}
-
-	// GitLab options for downloading templates from a repository
-	options.GitLabServerURL = os.Getenv("GITLAB_SERVER_URL")
-	if options.GitLabServerURL == "" {
-		options.GitLabServerURL = "https://gitlab.com"
-	}
-	options.GitLabToken = os.Getenv("GITLAB_TOKEN")
-	repolist = os.Getenv("GITLAB_REPOSITORY_IDS")
-	// Convert the comma separated list of repository IDs to a list of integers
-	if repolist != "" {
-		for _, repoID := range stringsutil.SplitAny(repolist, ",") {
-			// Attempt to convert the repo ID to an integer
-			repoIDInt, err := strconv.Atoi(repoID)
-			if err != nil {
-				gologger.Warning().Msgf("Invalid GitLab template repository ID: %s", repoID)
-				continue
-			}
-
-			// Add the int repository ID to the list
-			options.GitLabTemplateRepositoryIDs = append(options.GitLabTemplateRepositoryIDs, repoIDInt)
-		}
-	}
-
-	// AWS options for downloading templates from an S3 bucket
-	options.AwsAccessKey = os.Getenv("AWS_ACCESS_KEY")
-	options.AwsSecretKey = os.Getenv("AWS_SECRET_KEY")
-	options.AwsBucketName = os.Getenv("AWS_TEMPLATE_BUCKET")
-	options.AwsRegion = os.Getenv("AWS_REGION")
-
-	// Azure options for downloading templates from an Azure Blob Storage container
-	options.AzureContainerName = os.Getenv("AZURE_CONTAINER_NAME")
-	options.AzureTenantID = os.Getenv("AZURE_TENANT_ID")
-	options.AzureClientID = os.Getenv("AZURE_CLIENT_ID")
-	options.AzureClientSecret = os.Getenv("AZURE_CLIENT_SECRET")
-	options.AzureServiceURL = os.Getenv("AZURE_SERVICE_URL")
-
-	// Custom public keys for template verification
-	options.CodeTemplateSignaturePublicKey = os.Getenv("NUCLEI_SIGNATURE_PUBLIC_KEY")
-	options.CodeTemplateSignatureAlgorithm = os.Getenv("NUCLEI_SIGNATURE_ALGORITHM")
-
-	// General options to disable the template download locations from being used.
-	// This will override the default behavior of downloading templates from the default locations as well as the
-	// custom locations.
-	// The primary use-case is when the user wants to use custom templates only and does not want to download any
-	// templates from the default locations or is unable to connect to the public internet.
-	options.PublicTemplateDisableDownload = getBoolEnvValue("DISABLE_NUCLEI_TEMPLATES_PUBLIC_DOWNLOAD")
-	options.GitHubTemplateDisableDownload = getBoolEnvValue("DISABLE_NUCLEI_TEMPLATES_GITHUB_DOWNLOAD")
-	options.GitLabTemplateDisableDownload = getBoolEnvValue("DISABLE_NUCLEI_TEMPLATES_GITLAB_DOWNLOAD")
-	options.AwsTemplateDisableDownload = getBoolEnvValue("DISABLE_NUCLEI_TEMPLATES_AWS_DOWNLOAD")
-	options.AzureTemplateDisableDownload = getBoolEnvValue("DISABLE_NUCLEI_TEMPLATES_AZURE_DOWNLOAD")
-
-	// Options to modify the behavior of exporters
-	options.MarkdownExportSortMode = strings.ToLower(os.Getenv("MARKDOWN_EXPORT_SORT_MODE"))
-	// If the user has not specified a valid sort mode, use the default
-	if options.MarkdownExportSortMode != "template" && options.MarkdownExportSortMode != "severity" && options.MarkdownExportSortMode != "host" {
-		options.MarkdownExportSortMode = ""
-	}
-}
-
-func getBoolEnvValue(key string) bool {
-	value := os.Getenv(key)
-	return strings.EqualFold(value, "true")
 }

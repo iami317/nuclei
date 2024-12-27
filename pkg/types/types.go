@@ -322,41 +322,41 @@ type Options struct {
 	// PublicTemplateDisableDownload disables downloading templates from the nuclei-templates public repository
 	PublicTemplateDisableDownload bool
 	// GitHub token used to clone/pull from private repos for custom templates
-	GitHubToken string
+	//GitHubToken string
 	// GitHubTemplateRepo is the list of custom public/private templates GitHub repos
-	GitHubTemplateRepo []string
+	//GitHubTemplateRepo []string
 	// GitHubTemplateDisableDownload disables downloading templates from custom GitHub repositories
-	GitHubTemplateDisableDownload bool
+	//GitHubTemplateDisableDownload bool
 	// GitLabServerURL is the gitlab server to use for custom templates
-	GitLabServerURL string
+	//GitLabServerURL string
 	// GitLabToken used to clone/pull from private repos for custom templates
-	GitLabToken string
+	//GitLabToken string
 	// GitLabTemplateRepositoryIDs is the comma-separated list of custom gitlab repositories IDs
-	GitLabTemplateRepositoryIDs []int
+	//GitLabTemplateRepositoryIDs []int
 	// GitLabTemplateDisableDownload disables downloading templates from custom GitLab repositories
-	GitLabTemplateDisableDownload bool
+	//GitLabTemplateDisableDownload bool
 	// AWS access key for downloading templates from S3 bucket
-	AwsAccessKey string
+	//AwsAccessKey string
 	// AWS secret key for downloading templates from S3 bucket
-	AwsSecretKey string
+	//AwsSecretKey string
 	// AWS bucket name for downloading templates from S3 bucket
-	AwsBucketName string
+	//AwsBucketName string
 	// AWS Region name where AWS S3 bucket is located
-	AwsRegion string
+	//AwsRegion string
 	// AwsTemplateDisableDownload disables downloading templates from AWS S3 buckets
-	AwsTemplateDisableDownload bool
+	//AwsTemplateDisableDownload bool
 	// AzureContainerName for downloading templates from Azure Blob Storage. Example: templates
-	AzureContainerName string
+	//AzureContainerName string
 	// AzureTenantID for downloading templates from Azure Blob Storage. Example: 00000000-0000-0000-0000-000000000000
-	AzureTenantID string
+	//AzureTenantID string
 	// AzureClientID for downloading templates from Azure Blob Storage. Example: 00000000-0000-0000-0000-000000000000
-	AzureClientID string
+	//AzureClientID string
 	// AzureClientSecret for downloading templates from Azure Blob Storage. Example: 00000000-0000-0000-0000-000000000000
-	AzureClientSecret string
+	//AzureClientSecret string
 	// AzureServiceURL for downloading templates from Azure Blob Storage. Example: https://XXXXXXXXXX.blob.core.windows.net/
-	AzureServiceURL string
+	//AzureServiceURL string
 	// AzureTemplateDisableDownload disables downloading templates from Azure Blob Storage
-	AzureTemplateDisableDownload bool
+	//AzureTemplateDisableDownload bool
 	// Scan Strategy (auto,hosts-spray,templates-spray)
 	ScanStrategy string
 	// Fuzzing Type overrides template level fuzzing-type configuration
