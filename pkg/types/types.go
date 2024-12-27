@@ -209,7 +209,7 @@ type Options struct {
 	// No-Color disables the colored output.
 	NoColor bool
 	// UpdateTemplates updates the templates installed at startup (also used by cloud to update datasources)
-	UpdateTemplates bool
+	//UpdateTemplates bool
 	// JSON writes json line output to files
 	JSONL bool
 	// JSONRequests writes requests/responses for matches in JSON output
@@ -248,9 +248,9 @@ type Options struct {
 	// Project is used to avoid sending same HTTP request multiple times
 	Project bool
 	// NewTemplates only runs newly added templates from the repository
-	NewTemplates bool
+	//NewTemplates bool
 	// NewTemplatesWithVersion runs new templates added in specific version
-	NewTemplatesWithVersion goflags.StringSlice
+	//NewTemplatesWithVersion goflags.StringSlice
 	// NoInteractsh disables use of interactsh server for interaction polling
 	NoInteractsh bool
 	// EnvironmentVariables enables support for environment variables
@@ -272,7 +272,7 @@ type Options struct {
 	// ShowMatchLine enables display of match line number
 	ShowMatchLine bool
 	// EnablePprof enables exposing pprof runtime information with a webserver.
-	EnablePprof bool
+	//EnablePprof bool
 	// StoreResponse stores received response to output directory
 	StoreResponse bool
 	// StoreResponseDir stores received response to custom directory
@@ -398,7 +398,7 @@ type Options struct {
 	// Dast only runs DAST templates
 	DAST bool
 	// HttpApiEndpoint is the experimental http api endpoint
-	HttpApiEndpoint string
+	//HttpApiEndpoint string
 	// ListTemplateProfiles lists all available template profiles
 	ListTemplateProfiles bool
 	// LoadHelperFileFunction is a function that will be used to execute LoadHelperFile.

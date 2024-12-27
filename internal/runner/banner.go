@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/iami317/nuclei/v3/pkg/catalog/config"
-	updateutils "github.com/projectdiscovery/utils/update"
 )
 
 var banner = fmt.Sprintf(`
@@ -25,5 +24,5 @@ func showBanner() {
 // NucleiToolUpdateCallback updates nuclei binary/tool to latest version
 func NucleiToolUpdateCallback() {
 	showBanner()
-	updateutils.GetUpdateToolCallback(config.BinaryName, config.Version)()
+	//updateutils.GetUpdateToolCallback(config.BinaryName, config.Version)()
 }

@@ -15,7 +15,6 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/authprovider"
 	"github.com/iami317/nuclei/v3/pkg/fuzz/frequency"
 	"github.com/iami317/nuclei/v3/pkg/input/provider"
-	"github.com/iami317/nuclei/v3/pkg/installer"
 	"github.com/iami317/nuclei/v3/pkg/loader/parser"
 	"github.com/iami317/nuclei/v3/pkg/scan/events"
 	uncoverlib "github.com/projectdiscovery/uncover"
@@ -36,7 +35,6 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/catalog/disk"
 	"github.com/iami317/nuclei/v3/pkg/catalog/loader"
 	"github.com/iami317/nuclei/v3/pkg/core"
-	"github.com/iami317/nuclei/v3/pkg/external/customtemplates"
 	"github.com/iami317/nuclei/v3/pkg/input"
 	parsers "github.com/iami317/nuclei/v3/pkg/loader/workflow"
 	"github.com/iami317/nuclei/v3/pkg/output"
@@ -102,57 +100,6 @@ func New(options *types.Options) (*Runner, error) {
 		options: options,
 	}
 
-	if options.HealthCheck {
-		gologger.Print().Msgf("%s\n", DoHealthCheck(options))
-		os.Exit(0)
-	}
-
-	//  Version check by default
-	if config.DefaultConfig.CanCheckForUpdates() {
-		if err := installer.NucleiVersionCheck(); err != nil {
-			if options.Verbose || options.Debug {
-				gologger.Error().Msgf("nuclei version check failed got: %s\n", err)
-			}
-		}
-
-		// check for custom template updates and update if available
-		ctm, err := customtemplates.NewCustomTemplatesManager(options)
-		if err != nil {
-			gologger.Error().Label("custom-templates").Msgf("Failed to create custom templates manager: %s\n", err)
-		}
-
-		// Check for template updates and update if available.
-		// If the custom templates manager is not nil, we will install custom templates if there is a fresh installation
-		tm := &installer.TemplateManager{
-			CustomTemplates:        ctm,
-			DisablePublicTemplates: options.PublicTemplateDisableDownload,
-		}
-		if err := tm.FreshInstallIfNotExists(); err != nil {
-			gologger.Warning().Msgf("failed to install nuclei templates: %s\n", err)
-		}
-		if err := tm.UpdateIfOutdated(); err != nil {
-			gologger.Warning().Msgf("failed to update nuclei templates: %s\n", err)
-		}
-
-		if config.DefaultConfig.NeedsIgnoreFileUpdate() {
-			if err := installer.UpdateIgnoreFile(); err != nil {
-				gologger.Warning().Msgf("failed to update nuclei ignore file: %s\n", err)
-			}
-		}
-
-		if options.UpdateTemplates {
-			// we automatically check for updates unless explicitly disabled
-			// this print statement is only to inform the user that there are no updates
-			if !config.DefaultConfig.NeedsTemplateUpdate() {
-				gologger.Info().Msgf("No new updates found for nuclei templates")
-			}
-			// manually trigger update of custom templates
-			if ctm != nil {
-				ctm.Update(context.TODO())
-			}
-		}
-	}
-
 	parser := templates.NewParser()
 
 	if options.Validate {
@@ -211,30 +158,7 @@ func New(options *types.Options) (*Runner, error) {
 	templates.Colorizer = runner.colorizer
 	templates.SeverityColorizer = colorizer.New(runner.colorizer)
 
-	if options.EnablePprof {
-		server := &http.Server{
-			Addr:    pprofServerAddress,
-			Handler: http.DefaultServeMux,
-		}
-		gologger.Info().Msgf("Listening pprof debug server on: %s", pprofServerAddress)
-		runner.pprofServer = server
-		go func() {
-			_ = server.ListenAndServe()
-		}()
-	}
-
-	if options.HttpApiEndpoint != "" {
-		apiServer := httpapi.New(options.HttpApiEndpoint, options)
-		gologger.Info().Msgf("Listening api endpoint on: %s", options.HttpApiEndpoint)
-		runner.httpApiEndpoint = apiServer
-		go func() {
-			if err := apiServer.Start(); err != nil {
-				gologger.Error().Msgf("Failed to start API server: %s", err)
-			}
-		}()
-	}
-
-	if (len(options.Templates) == 0 || !options.NewTemplates || (options.TargetsFilePath == "" && !options.Stdin && len(options.Targets) == 0)) && options.UpdateTemplates {
+	if len(options.Templates) == 0 || (options.TargetsFilePath == "" && !options.Stdin && len(options.Targets) == 0) {
 		os.Exit(0)
 	}
 
@@ -243,14 +167,15 @@ func New(options *types.Options) (*Runner, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "could not create input provider")
 	}
-	runner.inputProvider = inputProvider
 
+	runner.inputProvider = inputProvider
 	if options.JSONL && options.EnableProgressBar {
 		options.StatsJSON = true
 	}
 	if options.StatsJSON {
 		options.EnableProgressBar = true
 	}
+
 	// Creates the progress tracking object
 	var progressErr error
 	statsInterval := options.StatsInterval
@@ -303,6 +228,7 @@ func New(options *types.Options) (*Runner, error) {
 	if httpclient != nil {
 		opts.HTTPClient = httpclient
 	}
+
 	if opts.HTTPClient == nil {
 		httpOpts := retryablehttp.DefaultOptionsSingle
 		httpOpts.Timeout = 20 * time.Second // for stability reasons
@@ -385,24 +311,6 @@ func (r *Runner) Close() {
 // RunEnumeration sets up the input layer for giving input nuclei.
 // binary and runs the actual enumeration
 func (r *Runner) RunEnumeration() error {
-	// If user asked for new templates to be executed, collect the list from the templates' directory.
-	if r.options.NewTemplates {
-		if arr := config.DefaultConfig.GetNewAdditions(); len(arr) > 0 {
-			r.options.Templates = append(r.options.Templates, arr...)
-		}
-	}
-	if len(r.options.NewTemplatesWithVersion) > 0 {
-		if arr := installer.GetNewTemplatesInVersions(r.options.NewTemplatesWithVersion...); len(arr) > 0 {
-			r.options.Templates = append(r.options.Templates, arr...)
-		}
-	}
-	// Exclude ignored file for validation
-	if !r.options.Validate {
-		ignoreFile := config.ReadIgnoreFile()
-		r.options.ExcludeTags = append(r.options.ExcludeTags, ignoreFile.Tags...)
-		r.options.ExcludedTemplates = append(r.options.ExcludedTemplates, ignoreFile.Files...)
-	}
-
 	fuzzFreqCache := frequency.New(frequency.DefaultMaxTrackCount, r.options.FuzzParamFrequency)
 	r.fuzzFrequencyCache = fuzzFreqCache
 
