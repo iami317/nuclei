@@ -117,10 +117,6 @@ func ParseOptions(options *types.Options) {
 			options.UncoverEngine = append(options.UncoverEngine, "shodan")
 		}
 	}
-
-	if options.OfflineHTTP {
-		options.DisableHTTPProbe = true
-	}
 }
 
 // validateOptions validates the configuration options passed

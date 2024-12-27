@@ -29,7 +29,6 @@ import (
 	"github.com/projectdiscovery/ratelimit"
 
 	"github.com/iami317/nuclei/v3/internal/colorizer"
-	"github.com/iami317/nuclei/v3/internal/httpapi"
 	"github.com/iami317/nuclei/v3/pkg/catalog"
 	"github.com/iami317/nuclei/v3/pkg/catalog/config"
 	"github.com/iami317/nuclei/v3/pkg/catalog/disk"
@@ -87,9 +86,8 @@ type Runner struct {
 	inputProvider      provider.InputProvider
 	fuzzFrequencyCache *frequency.Tracker
 	//general purpose temporary directory
-	tmpDir          string
-	parser          parser.Parser
-	httpApiEndpoint *httpapi.Server
+	tmpDir string
+	parser parser.Parser
 }
 
 const pprofServerAddress = "127.0.0.1:8086"
@@ -455,7 +453,7 @@ func (r *Runner) RunEnumeration() error {
 	// If not explicitly disabled, check if http based protocols
 	// are used, and if inputs are non-http to pre-perform probing
 	// of urls and storing them for execution.
-	if !r.options.DisableHTTPProbe && loader.IsHTTPBasedProtocolUsed(store) && r.isInputNonHTTP() {
+	if loader.IsHTTPBasedProtocolUsed(store) && r.isInputNonHTTP() {
 		inputHelpers, err := r.initializeTemplatesHTTPInput()
 		if err != nil {
 			return errors.Wrap(err, "could not probe http input")
