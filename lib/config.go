@@ -2,7 +2,6 @@ package nuclei
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"github.com/projectdiscovery/ratelimit"
@@ -109,55 +108,6 @@ type Concurrency struct {
 	JavascriptTemplateConcurrency int // number of templates to run concurrently for javascript templates (per host in host-spray mode)
 	TemplatePayloadConcurrency    int // max concurrent payloads to run for a template (a good default is 25)
 	ProbeConcurrency              int // max concurrent http probes to run (a good default is 50)
-}
-
-// WithConcurrency sets concurrency options
-func WithConcurrency(opts Concurrency) NucleiSDKOptions {
-	return func(e *NucleiEngine) error {
-		// minimum required is 1
-		if opts.TemplateConcurrency <= 0 {
-			return errors.New("template threads must be at least 1")
-		} else {
-			e.opts.TemplateThreads = opts.TemplateConcurrency
-		}
-		if opts.HostConcurrency <= 0 {
-			return errors.New("host concurrency must be at least 1")
-		} else {
-			e.opts.BulkSize = opts.HostConcurrency
-		}
-		if opts.HeadlessHostConcurrency <= 0 {
-			return errors.New("headless host concurrency must be at least 1")
-		} else {
-			e.opts.HeadlessBulkSize = opts.HeadlessHostConcurrency
-		}
-		if opts.HeadlessTemplateConcurrency <= 0 {
-			return errors.New("headless template threads must be at least 1")
-		} else {
-			e.opts.HeadlessTemplateThreads = opts.HeadlessTemplateConcurrency
-		}
-		if opts.JavascriptTemplateConcurrency <= 0 {
-			return errors.New("js must be at least 1")
-		} else {
-			e.opts.JsConcurrency = opts.JavascriptTemplateConcurrency
-		}
-		if opts.TemplatePayloadConcurrency <= 0 {
-			return errors.New("payload concurrency must be at least 1")
-		} else {
-			e.opts.PayloadConcurrency = opts.TemplatePayloadConcurrency
-		}
-		if opts.ProbeConcurrency <= 0 {
-			return errors.New("probe concurrency must be at least 1")
-		} else {
-			e.opts.ProbeConcurrency = opts.ProbeConcurrency
-		}
-		return nil
-	}
-}
-
-// WithGlobalRateLimit sets global rate (i.e all hosts combined) limit options
-// Deprecated: will be removed in favour of WithGlobalRateLimitCtx in next release
-func WithGlobalRateLimit(maxTokens int, duration time.Duration) NucleiSDKOptions {
-	return WithGlobalRateLimitCtx(context.Background(), maxTokens, duration)
 }
 
 // WithGlobalRateLimitCtx allows setting a global rate limit for the entire engine
