@@ -86,8 +86,7 @@ func (e *NucleiEngine) applyRequiredDefaults(ctx context.Context) {
 	if e.opts.ExcludeTags == nil {
 		e.opts.ExcludeTags = []string{}
 	}
-	// these templates are known to have weak matchers
-	// and idea is to disable them to avoid false positives
+	// these templates are known to have weak matchers and idea is to disable them to avoid false positives
 	e.opts.ExcludeTags = append(e.opts.ExcludeTags, config.ReadIgnoreFile().Tags...)
 
 	e.inputProvider = provider.NewSimpleInputProvider()

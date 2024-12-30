@@ -473,7 +473,7 @@ func DefaultOptions() *Options {
 		ProbeConcurrency:        50,
 		Timeout:                 5,
 		Retries:                 1,
-		MaxHostError:            10,
+		MaxHostError:            3,
 		ResponseReadSize:        10 * unitutils.Mega,
 		ResponseSaveSize:        unitutils.Mega,
 	}
