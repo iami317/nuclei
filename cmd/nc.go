@@ -25,10 +25,8 @@ func main() {
 	}
 	defer ne.Close()
 	t := []string{
-		"192.168.101.60:22",
-		"http://192.168.101.60:53247",
-		"http://192.168.101.60:57911",
-		"http://192.168.101.60:49688",
+		//"192.168.101.60:22",
+		"http://192.168.101.60:8080",
 		//"192.168.100.149:8080",
 		//"192.168.100.149:3306",
 		//"192.168.100.149:10000",
@@ -60,9 +58,9 @@ func exec(s string, wg *sync.WaitGroup) {
 	err = ne.ExecuteNucleiWithOpts(
 		[]string{s},
 		writeCallback,
-		ncx.WithTemplateFilters(ncx.TemplateFilters{
-			Tags: []string{"ssh"},
-		}),
+		//ncx.WithTemplateFilters(ncx.TemplateFilters{
+		//	Tags: []string{"ssh"},
+		//}),
 	)
 	if err != nil {
 		log.Fatalf("nc 执行Error:%v", err)
