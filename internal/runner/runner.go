@@ -131,25 +131,6 @@ func New(options *types.Options) (*Runner, error) {
 		}
 	}
 
-	if err := reporting.CreateConfigIfNotExists(); err != nil {
-		return nil, err
-	}
-	reportingOptions, err := createReportingOptions(options)
-	if err != nil {
-		return nil, err
-	}
-	if reportingOptions != nil && httpclient != nil {
-		reportingOptions.HttpClient = httpclient
-	}
-
-	if reportingOptions != nil {
-		client, err := reporting.New(reportingOptions, options.ReportingDB, false)
-		if err != nil {
-			return nil, errors.Wrap(err, "could not create issue reporting client")
-		}
-		runner.issuesClient = client
-	}
-
 	// output coloring
 	useColor := !options.NoColor
 	runner.colorizer = aurora.NewAurora(useColor)

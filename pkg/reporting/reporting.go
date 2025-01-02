@@ -2,21 +2,16 @@ package reporting
 
 import (
 	"fmt"
-	"os"
 	"strings"
 	"sync/atomic"
 
-	"github.com/iami317/nuclei/v3/pkg/catalog/config"
 	json_exporter "github.com/iami317/nuclei/v3/pkg/reporting/exporters/jsonexporter"
 	"github.com/iami317/nuclei/v3/pkg/reporting/exporters/jsonl"
 	"github.com/projectdiscovery/gologger"
 
-	"go.uber.org/multierr"
-	"gopkg.in/yaml.v2"
-
 	"errors"
+	"go.uber.org/multierr"
 
-	"github.com/iami317/nuclei/v3/pkg/model/types/stringslice"
 	"github.com/iami317/nuclei/v3/pkg/output"
 	"github.com/iami317/nuclei/v3/pkg/reporting/dedupe"
 	"github.com/iami317/nuclei/v3/pkg/reporting/exporters/es"
@@ -30,7 +25,6 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/reporting/trackers/jira"
 	"github.com/iami317/nuclei/v3/pkg/reporting/trackers/linear"
 	errorutil "github.com/projectdiscovery/utils/errors"
-	fileutil "github.com/projectdiscovery/utils/file"
 )
 
 var (
@@ -187,40 +181,6 @@ func New(options *Options, db string, doNotDedupe bool) (Client, error) {
 	}
 	client.dedupe = storage
 	return client, nil
-}
-
-// CreateConfigIfNotExists creates report-config if it doesn't exists
-func CreateConfigIfNotExists() error {
-	reportingConfig := config.DefaultConfig.GetReportingConfigFilePath()
-
-	if fileutil.FileExists(reportingConfig) {
-		return nil
-	}
-	values := stringslice.StringSlice{Value: []string{}}
-
-	options := &Options{
-		AllowList:             &filters.Filter{Tags: values},
-		DenyList:              &filters.Filter{Tags: values},
-		GitHub:                &github.Options{},
-		GitLab:                &gitlab.Options{},
-		Gitea:                 &gitea.Options{},
-		Jira:                  &jira.Options{},
-		Linear:                &linear.Options{},
-		MarkdownExporter:      &markdown.Options{},
-		SarifExporter:         &sarif.Options{},
-		ElasticsearchExporter: &es.Options{},
-		SplunkExporter:        &splunk.Options{},
-		JSONExporter:          &json_exporter.Options{},
-		JSONLExporter:         &jsonl.Options{},
-	}
-	reportingFile, err := os.Create(reportingConfig)
-	if err != nil {
-		return errorutil.NewWithErr(err).Msgf("could not create config file")
-	}
-	defer reportingFile.Close()
-
-	err = yaml.NewEncoder(reportingFile).Encode(options)
-	return err
 }
 
 // RegisterTracker registers a custom tracker to the reporter

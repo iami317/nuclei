@@ -103,11 +103,6 @@ func (c *Config) GetKeysDir() string {
 	return filepath.Join(c.configDir, "keys")
 }
 
-// GetReportingConfigFilePath returns the nuclei reporting config file path
-func (c *Config) GetReportingConfigFilePath() string {
-	return filepath.Join(c.configDir, ReportingConfigFilename)
-}
-
 // GetIgnoreFilePath returns the nuclei ignore file path
 func (c *Config) GetIgnoreFilePath() string {
 	return filepath.Join(c.configDir, NucleiIgnoreFileName)

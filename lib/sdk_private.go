@@ -21,7 +21,6 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/protocolinit"
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/protocolstate"
 	"github.com/iami317/nuclei/v3/pkg/protocols/http/httpclientpool"
-	"github.com/iami317/nuclei/v3/pkg/reporting"
 	"github.com/iami317/nuclei/v3/pkg/templates"
 	"github.com/iami317/nuclei/v3/pkg/testutils"
 	"github.com/iami317/nuclei/v3/pkg/types"
@@ -137,13 +136,6 @@ func (e *NucleiEngine) init(ctx context.Context) error {
 		e.interactshOpts.Progress = progressInstance
 	}
 
-	if err := reporting.CreateConfigIfNotExists(); err != nil {
-		return err
-	}
-	// we don't support reporting config in sdk mode
-	if e.rc, err = reporting.New(&reporting.Options{}, "", false); err != nil {
-		return err
-	}
 	e.interactshOpts.IssuesClient = e.rc
 	if e.httpClient != nil {
 		e.interactshOpts.HTTPClient = e.httpClient

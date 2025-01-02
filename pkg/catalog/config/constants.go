@@ -29,7 +29,7 @@ const (
 	NucleiTemplatesCheckSumFileName = ".checksum"
 	NewTemplateAdditionsFileName    = ".new-additions"
 	CLIConfigFileName               = "config.yaml"
-	ReportingConfigFilename         = "reporting-config.yaml"
+	//ReportingConfigFilename         = "reporting-config.yaml"
 	// Version is the current version of nuclei
 	Version                  = `v3.3.4`
 	BinaryName               = "nuclei"
