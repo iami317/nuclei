@@ -3,11 +3,11 @@ package protocolstate
 import (
 	"context"
 	"fmt"
-	//"github.com/go-sql-driver/mysql"
 	"net"
 	"net/url"
 	"sync"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/pkg/errors"
 	"golang.org/x/net/proxy"
 
@@ -109,8 +109,8 @@ func Init(options *types.Options) error {
 			},
 		}
 	}
-	if types.ProxySocksURL != "" {
-		proxyURL, err := url.Parse(types.ProxySocksURL)
+	if options.AliveSocksProxy != "" {
+		proxyURL, err := url.Parse(options.AliveSocksProxy)
 		if err != nil {
 			return err
 		}
@@ -155,9 +155,9 @@ func Init(options *types.Options) error {
 	Dialer = dialer
 
 	// override dialer in mysql
-	//mysql.RegisterDialContext("tcp", func(ctx context.Context, addr string) (net.Conn, error) {
-	//	return Dialer.Dial(ctx, "tcp", addr)
-	//})
+	mysql.RegisterDialContext("tcp", func(ctx context.Context, addr string) (net.Conn, error) {
+		return Dialer.Dial(ctx, "tcp", addr)
+	})
 
 	StartActiveMemGuardian(context.Background())
 

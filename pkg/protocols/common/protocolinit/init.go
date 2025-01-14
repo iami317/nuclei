@@ -9,6 +9,7 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/protocols/network/networkclientpool"
 	"github.com/iami317/nuclei/v3/pkg/protocols/whois/rdapclientpool"
 	"github.com/iami317/nuclei/v3/pkg/types"
+	_ "github.com/projectdiscovery/utils/global"
 )
 
 // Init initializes the client pools for the protocols

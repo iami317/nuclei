@@ -94,6 +94,10 @@ type Options struct {
 	ListDslSignatures bool
 	// List of HTTP(s)/SOCKS5 proxy to use (comma separated or file input)
 	Proxy goflags.StringSlice
+	// AliveProxy is the alive proxy to use
+	AliveHttpProxy string
+	// AliveSocksProxy is the alive socks proxy to use
+	AliveSocksProxy string
 	// TemplatesDirectory is the directory to use for storing templates
 	NewTemplatesDirectory string
 	// TraceLogFile specifies a file to write with the trace of all requests
@@ -189,6 +193,8 @@ type Options struct {
 	DebugRequests bool
 	// DebugResponse mode allows debugging response for the engine
 	DebugResponse bool
+	// DisableHTTPProbe disables http probing feature of input normalization
+	DisableHTTPProbe bool
 	// LeaveDefaultPorts skips normalization of default ports
 	LeaveDefaultPorts bool
 	// AutomaticScan enables automatic tech based template execution
@@ -204,10 +210,12 @@ type Options struct {
 	VerboseVerbose bool
 	// ShowVarDump displays variable dump
 	ShowVarDump bool
+	// VarDumpLimit limits the number of characters displayed in var dump
+	VarDumpLimit int
 	// No-Color disables the colored output.
 	NoColor bool
 	// UpdateTemplates updates the templates installed at startup (also used by cloud to update datasources)
-	//UpdateTemplates bool
+	UpdateTemplates bool
 	// JSON writes json line output to files
 	JSONL bool
 	// JSONRequests writes requests/responses for matches in JSON output
@@ -246,9 +254,9 @@ type Options struct {
 	// Project is used to avoid sending same HTTP request multiple times
 	Project bool
 	// NewTemplates only runs newly added templates from the repository
-	//NewTemplates bool
+	NewTemplates bool
 	// NewTemplatesWithVersion runs new templates added in specific version
-	//NewTemplatesWithVersion goflags.StringSlice
+	NewTemplatesWithVersion goflags.StringSlice
 	// NoInteractsh disables use of interactsh server for interaction polling
 	NoInteractsh bool
 	// EnvironmentVariables enables support for environment variables
@@ -270,7 +278,7 @@ type Options struct {
 	// ShowMatchLine enables display of match line number
 	ShowMatchLine bool
 	// EnablePprof enables exposing pprof runtime information with a webserver.
-	//EnablePprof bool
+	EnablePprof bool
 	// StoreResponse stores received response to output directory
 	StoreResponse bool
 	// StoreResponseDir stores received response to custom directory
@@ -294,7 +302,7 @@ type Options struct {
 	// ResponseSaveSize is the maximum size of response to save
 	ResponseSaveSize int
 	// Health Check
-	//HealthCheck bool
+	HealthCheck bool
 	// Time to wait between each input read operation before closing the stream
 	InputReadTimeout time.Duration
 	// Disable stdin for input processing
@@ -319,7 +327,44 @@ type Options struct {
 	IPVersion goflags.StringSlice
 	// PublicTemplateDisableDownload disables downloading templates from the nuclei-templates public repository
 	PublicTemplateDisableDownload bool
-	ScanStrategy                  string
+	// GitHub token used to clone/pull from private repos for custom templates
+	GitHubToken string
+	// GitHubTemplateRepo is the list of custom public/private templates GitHub repos
+	GitHubTemplateRepo []string
+	// GitHubTemplateDisableDownload disables downloading templates from custom GitHub repositories
+	GitHubTemplateDisableDownload bool
+	// GitLabServerURL is the gitlab server to use for custom templates
+	GitLabServerURL string
+	// GitLabToken used to clone/pull from private repos for custom templates
+	GitLabToken string
+	// GitLabTemplateRepositoryIDs is the comma-separated list of custom gitlab repositories IDs
+	GitLabTemplateRepositoryIDs []int
+	// GitLabTemplateDisableDownload disables downloading templates from custom GitLab repositories
+	GitLabTemplateDisableDownload bool
+	// AWS access key for downloading templates from S3 bucket
+	AwsAccessKey string
+	// AWS secret key for downloading templates from S3 bucket
+	AwsSecretKey string
+	// AWS bucket name for downloading templates from S3 bucket
+	AwsBucketName string
+	// AWS Region name where AWS S3 bucket is located
+	AwsRegion string
+	// AwsTemplateDisableDownload disables downloading templates from AWS S3 buckets
+	AwsTemplateDisableDownload bool
+	// AzureContainerName for downloading templates from Azure Blob Storage. Example: templates
+	AzureContainerName string
+	// AzureTenantID for downloading templates from Azure Blob Storage. Example: 00000000-0000-0000-0000-000000000000
+	AzureTenantID string
+	// AzureClientID for downloading templates from Azure Blob Storage. Example: 00000000-0000-0000-0000-000000000000
+	AzureClientID string
+	// AzureClientSecret for downloading templates from Azure Blob Storage. Example: 00000000-0000-0000-0000-000000000000
+	AzureClientSecret string
+	// AzureServiceURL for downloading templates from Azure Blob Storage. Example: https://XXXXXXXXXX.blob.core.windows.net/
+	AzureServiceURL string
+	// AzureTemplateDisableDownload disables downloading templates from Azure Blob Storage
+	AzureTemplateDisableDownload bool
+	// Scan Strategy (auto,hosts-spray,templates-spray)
+	ScanStrategy string
 	// Fuzzing Type overrides template level fuzzing-type configuration
 	FuzzingType string
 	// Fuzzing Mode overrides template level fuzzing-mode configuration
@@ -342,6 +387,22 @@ type Options struct {
 	EnableCodeTemplates bool
 	// DisableUnsignedTemplates disables processing of unsigned templates
 	DisableUnsignedTemplates bool
+	// EnableSelfContainedTemplates enables processing of self-contained templates
+	EnableSelfContainedTemplates bool
+	// EnableGlobalMatchersTemplates enables processing of global-matchers templates
+	EnableGlobalMatchersTemplates bool
+	// EnableFileTemplates enables file templates
+	EnableFileTemplates bool
+	// Disables cloud upload
+	EnableCloudUpload bool
+	// ScanID is the scan ID to use for cloud upload
+	ScanID string
+	// ScanName is the name of the scan to be uploaded
+	ScanName string
+	// ScanUploadFile is the jsonl file to upload scan results to cloud
+	ScanUploadFile string
+	// TeamID is the team ID to use for cloud upload
+	TeamID string
 	// JsConcurrency is the number of concurrent js routines to run
 	JsConcurrency int
 	// SecretsFile is file containing secrets for nuclei
@@ -359,7 +420,7 @@ type Options struct {
 	// Dast only runs DAST templates
 	DAST bool
 	// HttpApiEndpoint is the experimental http api endpoint
-	//HttpApiEndpoint string
+	HttpApiEndpoint string
 	// ListTemplateProfiles lists all available template profiles
 	ListTemplateProfiles bool
 	// LoadHelperFileFunction is a function that will be used to execute LoadHelperFile.
@@ -463,17 +524,17 @@ func (options *Options) HasClientCertificates() bool {
 // DefaultOptions returns default options for nuclei
 func DefaultOptions() *Options {
 	return &Options{
-		RateLimit:               250,
+		RateLimit:               150,
 		RateLimitDuration:       time.Second,
 		BulkSize:                25,
-		TemplateThreads:         250,
+		TemplateThreads:         25,
 		HeadlessBulkSize:        10,
-		PayloadConcurrency:      250,
-		HeadlessTemplateThreads: 100,
+		PayloadConcurrency:      25,
+		HeadlessTemplateThreads: 10,
 		ProbeConcurrency:        50,
 		Timeout:                 5,
 		Retries:                 1,
-		MaxHostError:            3,
+		MaxHostError:            30,
 		ResponseReadSize:        10 * unitutils.Mega,
 		ResponseSaveSize:        unitutils.Mega,
 	}

@@ -25,6 +25,13 @@ var DefaultConfig *Config
 type Config struct {
 	TemplatesDirectory string `json:"nuclei-templates-directory,omitempty"`
 
+	// customtemplates exists in templates directory with the name of custom-templates provider
+	// below custom paths are absolute paths to respective custom-templates directories
+	CustomS3TemplatesDirectory     string `json:"custom-s3-templates-directory"`
+	CustomGitHubTemplatesDirectory string `json:"custom-github-templates-directory"`
+	CustomGitLabTemplatesDirectory string `json:"custom-gitlab-templates-directory"`
+	CustomAzureTemplatesDirectory  string `json:"custom-azure-templates-directory"`
+
 	TemplateVersion        string `json:"nuclei-templates-version,omitempty"`
 	NucleiIgnoreHash       string `json:"nuclei-ignore-hash,omitempty"`
 	LogAllEvents           bool   `json:"-"` // when enabled logs all events (more than verbose)
@@ -39,9 +46,32 @@ type Config struct {
 	LatestNucleiIgnoreHash       string `json:"nuclei-latest-ignore-hash,omitempty"`
 
 	// internal / unexported fields
-	homeDir   string   `json:"-"` //  User Home Directory
-	configDir string   `json:"-"` //  Nuclei Global Config Directory
-	debugArgs []string `json:"-"` // debug args
+	disableUpdates bool     `json:"-"` // disable updates both version check and template updates
+	homeDir        string   `json:"-"` //  User Home Directory
+	configDir      string   `json:"-"` //  Nuclei Global Config Directory
+	debugArgs      []string `json:"-"` // debug args
+}
+
+// IsCustomTemplate determines whether a given template is custom-built or part of the official Nuclei templates.
+// It checks if the template's path matches any of the predefined custom template directories
+// (such as S3, GitHub, GitLab, and Azure directories). If the template resides in any of these directories,
+// it is considered custom. Additionally, if the template's path does not start with the main Nuclei TemplatesDirectory,
+// it is also considered custom. This function assumes that template paths are either absolute
+// or relative to the same base as the paths configured in DefaultConfig.
+func (c *Config) IsCustomTemplate(templatePath string) bool {
+	customDirs := []string{
+		c.CustomS3TemplatesDirectory,
+		c.CustomGitHubTemplatesDirectory,
+		c.CustomGitLabTemplatesDirectory,
+		c.CustomAzureTemplatesDirectory,
+	}
+
+	for _, dir := range customDirs {
+		if strings.HasPrefix(templatePath, dir) {
+			return true
+		}
+	}
+	return !strings.HasPrefix(templatePath, c.TemplatesDirectory)
 }
 
 // WriteVersionCheckData writes version check data to config file
@@ -70,6 +100,21 @@ func (c *Config) WriteVersionCheckData(ignorehash, nucleiVersion, templatesVersi
 func (c *Config) GetTemplateDir() string {
 	val, _ := filepath.Abs(c.TemplatesDirectory)
 	return val
+}
+
+// DisableUpdateCheck disables update check and template updates
+func (c *Config) DisableUpdateCheck() {
+	c.disableUpdates = true
+}
+
+// CanCheckForUpdates returns true if update check is enabled
+func (c *Config) CanCheckForUpdates() bool {
+	return !c.disableUpdates
+}
+
+// NeedsTemplateUpdate returns true if template installation/update is required
+func (c *Config) NeedsTemplateUpdate() bool {
+	return !c.disableUpdates && (c.TemplateVersion == "" || IsOutdatedVersion(c.TemplateVersion, c.LatestNucleiTemplatesVersion) || !fileutil.FolderExists(c.TemplatesDirectory))
 }
 
 // NeedsIgnoreFileUpdate returns true if Ignore file hash is different (aka ignore file is outdated)
@@ -101,6 +146,16 @@ func (c *Config) GetConfigDir() string {
 // GetKeysDir returns the nuclei signer keys directory
 func (c *Config) GetKeysDir() string {
 	return filepath.Join(c.configDir, "keys")
+}
+
+// GetAllCustomTemplateDirs returns all custom template directories
+func (c *Config) GetAllCustomTemplateDirs() []string {
+	return []string{c.CustomS3TemplatesDirectory, c.CustomGitHubTemplatesDirectory, c.CustomGitLabTemplatesDirectory, c.CustomAzureTemplatesDirectory}
+}
+
+// GetReportingConfigFilePath returns the nuclei reporting config file path
+func (c *Config) GetReportingConfigFilePath() string {
+	return filepath.Join(c.configDir, ReportingConfigFilename)
 }
 
 // GetIgnoreFilePath returns the nuclei ignore file path
@@ -179,6 +234,11 @@ func (c *Config) SetTemplatesDir(dirPath string) {
 		dirPath = filepath.Join(cwd, dirPath)
 	}
 	c.TemplatesDirectory = dirPath
+	// Update the custom templates directory
+	c.CustomGitHubTemplatesDirectory = filepath.Join(dirPath, CustomGitHubTemplatesDirName)
+	c.CustomS3TemplatesDirectory = filepath.Join(dirPath, CustomS3TemplatesDirName)
+	c.CustomGitLabTemplatesDirectory = filepath.Join(dirPath, CustomGitLabTemplatesDirName)
+	c.CustomAzureTemplatesDirectory = filepath.Join(dirPath, CustomAzureTemplatesDirName)
 }
 
 // SetTemplatesVersion sets the new nuclei templates version

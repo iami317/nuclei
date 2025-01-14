@@ -5,6 +5,7 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/reporting/exporters/jsonexporter"
 	"github.com/iami317/nuclei/v3/pkg/reporting/exporters/jsonl"
 	"github.com/iami317/nuclei/v3/pkg/reporting/exporters/markdown"
+	"github.com/iami317/nuclei/v3/pkg/reporting/exporters/mongo"
 	"github.com/iami317/nuclei/v3/pkg/reporting/exporters/sarif"
 	"github.com/iami317/nuclei/v3/pkg/reporting/exporters/splunk"
 	"github.com/iami317/nuclei/v3/pkg/reporting/trackers/filters"
@@ -44,6 +45,8 @@ type Options struct {
 	JSONExporter *jsonexporter.Options `yaml:"json"`
 	// JSONLExporter contains configuration options for JSONL Exporter Module
 	JSONLExporter *jsonl.Options `yaml:"jsonl"`
+	// MongoDBExporter containers the configuration options for the MongoDB Exporter Module
+	MongoDBExporter *mongo.Options `yaml:"mongodb"`
 
 	HttpClient *retryablehttp.Client `yaml:"-"`
 	OmitRaw    bool                  `yaml:"-"`

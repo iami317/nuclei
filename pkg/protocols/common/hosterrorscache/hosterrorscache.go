@@ -124,13 +124,13 @@ func (c *Cache) Check(protoType string, ctx *contextargs.Context) bool {
 	}
 	if existingCacheItem.isPermanentErr {
 		// skipping permanent errors is expected so verbose instead of info
-		gologger.Verbose().Msgf("从目标列表中跳过%s，发现永久无响应：%s", finalValue, existingCacheItem.cause)
+		gologger.Verbose().Msgf("Skipped %s from target list as found unresponsive permanently: %s", finalValue, existingCacheItem.cause)
 		return true
 	}
 
 	if existingCacheItem.errors.Load() >= int32(c.MaxHostError) {
 		existingCacheItem.Do(func() {
-			gologger.Debug().Msgf("从目标列表中跳过%s，因为发现无响应 %d次", finalValue, existingCacheItem.errors.Load())
+			gologger.Info().Msgf("Skipped %s from target list as found unresponsive %d times", finalValue, existingCacheItem.errors.Load())
 		})
 		return true
 	}

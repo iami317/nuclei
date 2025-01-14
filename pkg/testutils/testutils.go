@@ -35,14 +35,14 @@ func Init(options *types.Options) {
 
 // DefaultOptions is the default options structure for nuclei during mocking.
 var DefaultOptions = &types.Options{
-	Metrics:       false,
-	Debug:         false,
-	DebugRequests: false,
-	DebugResponse: false,
-	Silent:        false,
-	Verbose:       false,
-	NoColor:       true,
-	//UpdateTemplates:            false,
+	Metrics:                    false,
+	Debug:                      false,
+	DebugRequests:              false,
+	DebugResponse:              false,
+	Silent:                     false,
+	Verbose:                    false,
+	NoColor:                    true,
+	UpdateTemplates:            false,
 	JSONL:                      false,
 	OmitRawRequests:            false,
 	EnableProgressBar:          false,
@@ -74,6 +74,8 @@ var DefaultOptions = &types.Options{
 	InteractionsEviction:       60,
 	InteractionsCoolDownPeriod: 5,
 	InteractionsPollDuration:   5,
+	GitHubTemplateRepo:         []string{},
+	GitHubToken:                "",
 }
 
 // TemplateInfo contains info for a mock executed template.
@@ -205,7 +207,7 @@ var maxTemplateFileSizeForEncoding = unitutils.Mega
 
 func (w *MockOutputWriter) encodeTemplate(templatePath string) string {
 	data, err := os.ReadFile(templatePath)
-	if err == nil && !w.omitTemplate && len(data) <= maxTemplateFileSizeForEncoding {
+	if err == nil && !w.omitTemplate && len(data) <= maxTemplateFileSizeForEncoding && config.DefaultConfig.IsCustomTemplate(templatePath) {
 		return base64.StdEncoding.EncodeToString(data)
 	}
 	return ""

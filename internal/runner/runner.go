@@ -3,6 +3,7 @@ package runner
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
@@ -12,9 +13,11 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/iami317/nuclei/v3/internal/pdcp"
 	"github.com/iami317/nuclei/v3/pkg/authprovider"
 	"github.com/iami317/nuclei/v3/pkg/fuzz/frequency"
 	"github.com/iami317/nuclei/v3/pkg/input/provider"
+	"github.com/iami317/nuclei/v3/pkg/installer"
 	"github.com/iami317/nuclei/v3/pkg/loader/parser"
 	"github.com/iami317/nuclei/v3/pkg/scan/events"
 	uncoverlib "github.com/projectdiscovery/uncover"
@@ -29,11 +32,13 @@ import (
 	"github.com/projectdiscovery/ratelimit"
 
 	"github.com/iami317/nuclei/v3/internal/colorizer"
+	"github.com/iami317/nuclei/v3/internal/httpapi"
 	"github.com/iami317/nuclei/v3/pkg/catalog"
 	"github.com/iami317/nuclei/v3/pkg/catalog/config"
 	"github.com/iami317/nuclei/v3/pkg/catalog/disk"
 	"github.com/iami317/nuclei/v3/pkg/catalog/loader"
 	"github.com/iami317/nuclei/v3/pkg/core"
+	"github.com/iami317/nuclei/v3/pkg/external/customtemplates"
 	"github.com/iami317/nuclei/v3/pkg/input"
 	parsers "github.com/iami317/nuclei/v3/pkg/loader/workflow"
 	"github.com/iami317/nuclei/v3/pkg/output"
@@ -42,6 +47,7 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/protocols"
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/automaticscan"
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/contextargs"
+	"github.com/iami317/nuclei/v3/pkg/protocols/common/globalmatchers"
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/hosterrorscache"
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/interactsh"
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/protocolinit"
@@ -65,6 +71,7 @@ var (
 	// HideAutoSaveMsg is a global variable to hide the auto-save message
 	HideAutoSaveMsg = false
 	// EnableCloudUpload is global variable to enable cloud upload
+	EnableCloudUpload = false
 )
 
 // Runner is a client for running the enumeration process.
@@ -86,8 +93,9 @@ type Runner struct {
 	inputProvider      provider.InputProvider
 	fuzzFrequencyCache *frequency.Tracker
 	//general purpose temporary directory
-	tmpDir string
-	parser parser.Parser
+	tmpDir          string
+	parser          parser.Parser
+	httpApiEndpoint *httpapi.Server
 }
 
 const pprofServerAddress = "127.0.0.1:8086"
@@ -96,6 +104,57 @@ const pprofServerAddress = "127.0.0.1:8086"
 func New(options *types.Options) (*Runner, error) {
 	runner := &Runner{
 		options: options,
+	}
+
+	if options.HealthCheck {
+		gologger.Print().Msgf("%s\n", DoHealthCheck(options))
+		os.Exit(0)
+	}
+
+	//  Version check by default
+	if config.DefaultConfig.CanCheckForUpdates() {
+		if err := installer.NucleiVersionCheck(); err != nil {
+			if options.Verbose || options.Debug {
+				gologger.Error().Msgf("nuclei version check failed got: %s\n", err)
+			}
+		}
+
+		// check for custom template updates and update if available
+		ctm, err := customtemplates.NewCustomTemplatesManager(options)
+		if err != nil {
+			gologger.Error().Label("custom-templates").Msgf("Failed to create custom templates manager: %s\n", err)
+		}
+
+		// Check for template updates and update if available.
+		// If the custom templates manager is not nil, we will install custom templates if there is a fresh installation
+		tm := &installer.TemplateManager{
+			CustomTemplates:        ctm,
+			DisablePublicTemplates: options.PublicTemplateDisableDownload,
+		}
+		if err := tm.FreshInstallIfNotExists(); err != nil {
+			gologger.Warning().Msgf("failed to install nuclei templates: %s\n", err)
+		}
+		if err := tm.UpdateIfOutdated(); err != nil {
+			gologger.Warning().Msgf("failed to update nuclei templates: %s\n", err)
+		}
+
+		if config.DefaultConfig.NeedsIgnoreFileUpdate() {
+			if err := installer.UpdateIgnoreFile(); err != nil {
+				gologger.Warning().Msgf("failed to update nuclei ignore file: %s\n", err)
+			}
+		}
+
+		if options.UpdateTemplates {
+			// we automatically check for updates unless explicitly disabled
+			// this print statement is only to inform the user that there are no updates
+			if !config.DefaultConfig.NeedsTemplateUpdate() {
+				gologger.Info().Msgf("No new updates found for nuclei templates")
+			}
+			// manually trigger update of custom templates
+			if ctm != nil {
+				ctm.Update(context.TODO())
+			}
+		}
 	}
 
 	parser := templates.NewParser()
@@ -123,12 +182,31 @@ func New(options *types.Options) (*Runner, error) {
 	runner.catalog = disk.NewCatalog(config.DefaultConfig.TemplatesDirectory)
 
 	var httpclient *retryablehttp.Client
-	if options.ProxyInternal && types.ProxyURL != "" || types.ProxySocksURL != "" {
+	if options.ProxyInternal && options.AliveHttpProxy != "" || options.AliveSocksProxy != "" {
 		var err error
 		httpclient, err = httpclientpool.Get(options, &httpclientpool.Configuration{})
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	if err := reporting.CreateConfigIfNotExists(); err != nil {
+		return nil, err
+	}
+	reportingOptions, err := createReportingOptions(options)
+	if err != nil {
+		return nil, err
+	}
+	if reportingOptions != nil && httpclient != nil {
+		reportingOptions.HttpClient = httpclient
+	}
+
+	if reportingOptions != nil {
+		client, err := reporting.New(reportingOptions, options.ReportingDB, false)
+		if err != nil {
+			return nil, errors.Wrap(err, "could not create issue reporting client")
+		}
+		runner.issuesClient = client
 	}
 
 	// output coloring
@@ -137,7 +215,30 @@ func New(options *types.Options) (*Runner, error) {
 	templates.Colorizer = runner.colorizer
 	templates.SeverityColorizer = colorizer.New(runner.colorizer)
 
-	if len(options.Templates) == 0 || (options.TargetsFilePath == "" && !options.Stdin && len(options.Targets) == 0) {
+	if options.EnablePprof {
+		server := &http.Server{
+			Addr:    pprofServerAddress,
+			Handler: http.DefaultServeMux,
+		}
+		gologger.Info().Msgf("Listening pprof debug server on: %s", pprofServerAddress)
+		runner.pprofServer = server
+		go func() {
+			_ = server.ListenAndServe()
+		}()
+	}
+
+	if options.HttpApiEndpoint != "" {
+		apiServer := httpapi.New(options.HttpApiEndpoint, options)
+		gologger.Info().Msgf("Listening api endpoint on: %s", options.HttpApiEndpoint)
+		runner.httpApiEndpoint = apiServer
+		go func() {
+			if err := apiServer.Start(); err != nil {
+				gologger.Error().Msgf("Failed to start API server: %s", err)
+			}
+		}()
+	}
+
+	if (len(options.Templates) == 0 || !options.NewTemplates || (options.TargetsFilePath == "" && !options.Stdin && len(options.Targets) == 0)) && options.UpdateTemplates {
 		os.Exit(0)
 	}
 
@@ -146,15 +247,22 @@ func New(options *types.Options) (*Runner, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "could not create input provider")
 	}
-
 	runner.inputProvider = inputProvider
+
+	// Create the output file if asked
+	outputWriter, err := output.NewStandardWriter(options)
+	if err != nil {
+		return nil, errors.Wrap(err, "could not create output file")
+	}
+	// setup a proxy writer to automatically upload results to PDCP
+	runner.output = runner.setupPDCPUpload(outputWriter)
+
 	if options.JSONL && options.EnableProgressBar {
 		options.StatsJSON = true
 	}
 	if options.StatsJSON {
 		options.EnableProgressBar = true
 	}
-
 	// Creates the progress tracking object
 	var progressErr error
 	statsInterval := options.StatsInterval
@@ -207,7 +315,6 @@ func New(options *types.Options) (*Runner, error) {
 	if httpclient != nil {
 		opts.HTTPClient = httpclient
 	}
-
 	if opts.HTTPClient == nil {
 		httpOpts := retryablehttp.DefaultOptionsSingle
 		httpOpts.Timeout = 20 * time.Second // for stability reasons
@@ -285,11 +392,71 @@ func (r *Runner) Close() {
 	if r.tmpDir != "" {
 		_ = os.RemoveAll(r.tmpDir)
 	}
+
+	//this is no-op unless nuclei is built with stats build tag
+	events.Close()
+}
+
+// setupPDCPUpload sets up the PDCP upload writer
+// by creating a new writer and returning it
+func (r *Runner) setupPDCPUpload(writer output.Writer) output.Writer {
+	// if scanid is given implicitly consider that scan upload is enabled
+	if r.options.ScanID != "" {
+		r.options.EnableCloudUpload = true
+	}
+	if !(r.options.EnableCloudUpload || EnableCloudUpload) {
+		r.pdcpUploadErrMsg = fmt.Sprintf("[%v] Scan results upload to cloud is disabled.", r.colorizer.BrightYellow("WRN"))
+		return writer
+	}
+	color := aurora.NewAurora(!r.options.NoColor)
+	h := &pdcpauth.PDCPCredHandler{}
+	creds, err := h.GetCreds()
+	if err != nil {
+		if err != pdcpauth.ErrNoCreds && !HideAutoSaveMsg {
+			gologger.Verbose().Msgf("Could not get credentials for cloud upload: %s\n", err)
+		}
+		r.pdcpUploadErrMsg = fmt.Sprintf("[%v] To view results on Cloud Dashboard, Configure API key from %v", color.BrightYellow("WRN"), pdcpauth.DashBoardURL)
+		return writer
+	}
+	uploadWriter, err := pdcp.NewUploadWriter(context.Background(), creds)
+	if err != nil {
+		r.pdcpUploadErrMsg = fmt.Sprintf("[%v] PDCP (%v) Auto-Save Failed: %s\n", color.BrightYellow("WRN"), pdcpauth.DashBoardURL, err)
+		return writer
+	}
+	if r.options.ScanID != "" {
+		// ignore and use empty scan id if invalid
+		_ = uploadWriter.SetScanID(r.options.ScanID)
+	}
+	if r.options.ScanName != "" {
+		uploadWriter.SetScanName(r.options.ScanName)
+	}
+	if r.options.TeamID != "" {
+		uploadWriter.SetTeamID(r.options.TeamID)
+	}
+	return output.NewMultiWriter(writer, uploadWriter)
 }
 
 // RunEnumeration sets up the input layer for giving input nuclei.
 // binary and runs the actual enumeration
 func (r *Runner) RunEnumeration() error {
+	// If user asked for new templates to be executed, collect the list from the templates' directory.
+	if r.options.NewTemplates {
+		if arr := config.DefaultConfig.GetNewAdditions(); len(arr) > 0 {
+			r.options.Templates = append(r.options.Templates, arr...)
+		}
+	}
+	if len(r.options.NewTemplatesWithVersion) > 0 {
+		if arr := installer.GetNewTemplatesInVersions(r.options.NewTemplatesWithVersion...); len(arr) > 0 {
+			r.options.Templates = append(r.options.Templates, arr...)
+		}
+	}
+	// Exclude ignored file for validation
+	if !r.options.Validate {
+		ignoreFile := config.ReadIgnoreFile()
+		r.options.ExcludeTags = append(r.options.ExcludeTags, ignoreFile.Tags...)
+		r.options.ExcludedTemplates = append(r.options.ExcludedTemplates, ignoreFile.Files...)
+	}
+
 	fuzzFreqCache := frequency.New(frequency.DefaultMaxTrackCount, r.options.FuzzParamFrequency)
 	r.fuzzFrequencyCache = fuzzFreqCache
 
@@ -312,6 +479,7 @@ func (r *Runner) RunEnumeration() error {
 		TemporaryDirectory:  r.tmpDir,
 		Parser:              r.parser,
 		FuzzParamsFrequency: fuzzFreqCache,
+		GlobalMatchers:      globalmatchers.New(),
 	}
 
 	if config.DefaultConfig.IsDebugArgEnabled(config.DebugExportURLPattern) {
@@ -434,7 +602,7 @@ func (r *Runner) RunEnumeration() error {
 	// If not explicitly disabled, check if http based protocols
 	// are used, and if inputs are non-http to pre-perform probing
 	// of urls and storing them for execution.
-	if loader.IsHTTPBasedProtocolUsed(store) && r.isInputNonHTTP() {
+	if !r.options.DisableHTTPProbe && loader.IsHTTPBasedProtocolUsed(store) && r.isInputNonHTTP() {
 		inputHelpers, err := r.initializeTemplatesHTTPInput()
 		if err != nil {
 			return errors.Wrap(err, "could not probe http input")
@@ -562,6 +730,8 @@ func (r *Runner) displayExecutionInfo(store *loader.Store) {
 		stats.ForceDisplayWarning(templates.ExcludedCodeTmplStats)
 		stats.ForceDisplayWarning(templates.ExludedDastTmplStats)
 		stats.ForceDisplayWarning(templates.TemplatesExcludedStats)
+		stats.ForceDisplayWarning(templates.ExcludedFileStats)
+		stats.ForceDisplayWarning(templates.ExcludedSelfContainedStats)
 	}
 
 	if tmplCount == 0 && workflowCount == 0 {
@@ -630,6 +800,52 @@ func (r *Runner) SaveResumeConfig(path string) error {
 	return os.WriteFile(path, data, permissionutil.ConfigFilePermission)
 }
 
+// upload existing scan results to cloud with progress
+func UploadResultsToCloud(options *types.Options) error {
+	h := &pdcpauth.PDCPCredHandler{}
+	creds, err := h.GetCreds()
+	if err != nil {
+		return errors.Wrap(err, "could not get credentials for cloud upload")
+	}
+	ctx := context.TODO()
+	uploadWriter, err := pdcp.NewUploadWriter(ctx, creds)
+	if err != nil {
+		return errors.Wrap(err, "could not create upload writer")
+	}
+	if options.ScanID != "" {
+		_ = uploadWriter.SetScanID(options.ScanID)
+	}
+	if options.ScanName != "" {
+		uploadWriter.SetScanName(options.ScanName)
+	}
+	if options.TeamID != "" {
+		uploadWriter.SetTeamID(options.TeamID)
+	}
+
+	// Open file to count the number of results first
+	file, err := os.Open(options.ScanUploadFile)
+	if err != nil {
+		return errors.Wrap(err, "could not open scan upload file")
+	}
+	defer file.Close()
+
+	gologger.Info().Msgf("Uploading scan results to cloud dashboard from %s", options.ScanUploadFile)
+	dec := json.NewDecoder(file)
+	for dec.More() {
+		var r output.ResultEvent
+		err := dec.Decode(&r)
+		if err != nil {
+			gologger.Warning().Msgf("Could not decode jsonl: %s\n", err)
+			continue
+		}
+		if err = uploadWriter.Write(&r); err != nil {
+			gologger.Warning().Msgf("[%s] failed to upload: %s\n", r.TemplateID, err)
+		}
+	}
+	uploadWriter.Close()
+	return nil
+}
+
 type WalkFunc func(reflect.Value, reflect.StructField)
 
 // Walk traverses a struct and executes a callback function on each value in the struct.
@@ -681,4 +897,5 @@ func expandEndVars(f reflect.Value, fieldType reflect.StructField) {
 
 func init() {
 	HideAutoSaveMsg = env.GetEnvOrDefault("DISABLE_CLOUD_UPLOAD_WRN", false)
+	EnableCloudUpload = env.GetEnvOrDefault("ENABLE_CLOUD_UPLOAD", false)
 }

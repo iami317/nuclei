@@ -29,12 +29,17 @@ const (
 	NucleiTemplatesCheckSumFileName = ".checksum"
 	NewTemplateAdditionsFileName    = ".new-additions"
 	CLIConfigFileName               = "config.yaml"
-	//ReportingConfigFilename         = "reporting-config.yaml"
+	ReportingConfigFilename         = "reporting-config.yaml"
 	// Version is the current version of nuclei
-	Version                  = `v3.3.4`
-	BinaryName               = "nuclei"
-	FallbackConfigFolderName = ".nuclei-config"
-	NucleiConfigDirEnv       = "NUCLEI_CONFIG_DIR"
+	Version = `v3.3.8`
+	// Directory Names of custom templates
+	CustomS3TemplatesDirName     = "s3"
+	CustomGitHubTemplatesDirName = "github"
+	CustomAzureTemplatesDirName  = "azure"
+	CustomGitLabTemplatesDirName = "gitlab"
+	BinaryName                   = "nuclei"
+	FallbackConfigFolderName     = ".nuclei-config"
+	NucleiConfigDirEnv           = "NUCLEI_CONFIG_DIR"
 )
 
 // IsOutdatedVersion compares two versions and returns true

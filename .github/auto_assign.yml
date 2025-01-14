@@ -1,7 +1,0 @@
-addReviewers: true
-reviewers:
-  - dogancanbakir
-
-numberOfReviewers: 1
-skipKeywords:
-  - '@dependabot'

@@ -7,12 +7,15 @@ import (
 	"sync"
 	"time"
 
+	"github.com/iami317/nuclei/v3/pkg/input"
+
 	"github.com/iami317/nuclei/v3/internal/runner"
 	"github.com/iami317/nuclei/v3/pkg/authprovider"
 	"github.com/iami317/nuclei/v3/pkg/catalog/config"
 	"github.com/iami317/nuclei/v3/pkg/catalog/disk"
 	"github.com/iami317/nuclei/v3/pkg/core"
 	"github.com/iami317/nuclei/v3/pkg/input/provider"
+	"github.com/iami317/nuclei/v3/pkg/installer"
 	"github.com/iami317/nuclei/v3/pkg/output"
 	"github.com/iami317/nuclei/v3/pkg/progress"
 	"github.com/iami317/nuclei/v3/pkg/protocols"
@@ -21,6 +24,7 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/protocolinit"
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/protocolstate"
 	"github.com/iami317/nuclei/v3/pkg/protocols/http/httpclientpool"
+	"github.com/iami317/nuclei/v3/pkg/reporting"
 	"github.com/iami317/nuclei/v3/pkg/templates"
 	"github.com/iami317/nuclei/v3/pkg/testutils"
 	"github.com/iami317/nuclei/v3/pkg/types"
@@ -54,7 +58,7 @@ func (e *NucleiEngine) applyRequiredDefaults(ctx context.Context) {
 		} else {
 			sb.WriteString(event.Host)
 		}
-		//fmt.Println(sb.String())
+		fmt.Println(sb.String())
 	}
 	if e.onFailureCallback != nil {
 		mockoutput.FailureCallback = e.onFailureCallback
@@ -69,7 +73,7 @@ func (e *NucleiEngine) applyRequiredDefaults(ctx context.Context) {
 	if e.customProgress == nil {
 		e.customProgress = &testutils.MockProgressClient{}
 	}
-	if e.hostErrCache == nil {
+	if e.hostErrCache == nil && e.opts.ShouldUseHostError() {
 		e.hostErrCache = hosterrorscache.New(30, hosterrorscache.DefaultMaxHostsCount, nil)
 	}
 	// setup interactsh
@@ -85,8 +89,9 @@ func (e *NucleiEngine) applyRequiredDefaults(ctx context.Context) {
 	if e.opts.ExcludeTags == nil {
 		e.opts.ExcludeTags = []string{}
 	}
-	// these templates are known to have weak matchers and idea is to disable them to avoid false positives
-	//e.opts.ExcludeTags = append(e.opts.ExcludeTags, config.ReadIgnoreFile().Tags...)
+	// these templates are known to have weak matchers
+	// and idea is to disable them to avoid false positives
+	e.opts.ExcludeTags = append(e.opts.ExcludeTags, config.ReadIgnoreFile().Tags...)
 
 	e.inputProvider = provider.NewSimpleInputProvider()
 }
@@ -115,7 +120,7 @@ func (e *NucleiEngine) init(ctx context.Context) error {
 		_ = protocolinit.Init(e.opts)
 	})
 
-	if e.opts.ProxyInternal && types.ProxyURL != "" || types.ProxySocksURL != "" {
+	if e.opts.ProxyInternal && e.opts.AliveHttpProxy != "" || e.opts.AliveSocksProxy != "" {
 		httpclient, err := httpclientpool.Get(e.opts, &httpclientpool.Configuration{})
 		if err != nil {
 			return err
@@ -136,6 +141,13 @@ func (e *NucleiEngine) init(ctx context.Context) error {
 		e.interactshOpts.Progress = progressInstance
 	}
 
+	if err := reporting.CreateConfigIfNotExists(); err != nil {
+		return err
+	}
+	// we don't support reporting config in sdk mode
+	if e.rc, err = reporting.New(&reporting.Options{}, "", false); err != nil {
+		return err
+	}
 	e.interactshOpts.IssuesClient = e.rc
 	if e.httpClient != nil {
 		e.interactshOpts.HTTPClient = e.httpClient
@@ -149,18 +161,21 @@ func (e *NucleiEngine) init(ctx context.Context) error {
 	}
 
 	e.executerOpts = protocols.ExecutorOptions{
-		Output:          e.customWriter,
-		Options:         e.opts,
-		Progress:        e.customProgress,
-		Catalog:         e.catalog,
-		IssuesClient:    e.rc,
-		RateLimiter:     e.rateLimiter,
-		Interactsh:      e.interactshClient,
-		HostErrorsCache: e.hostErrCache,
-		Colorizer:       aurora.NewAurora(true),
-		ResumeCfg:       types.NewResumeCfg(),
-		Browser:         e.browserInstance,
-		Parser:          e.parser,
+		Output:       e.customWriter,
+		Options:      e.opts,
+		Progress:     e.customProgress,
+		Catalog:      e.catalog,
+		IssuesClient: e.rc,
+		RateLimiter:  e.rateLimiter,
+		Interactsh:   e.interactshClient,
+		Colorizer:    aurora.NewAurora(true),
+		ResumeCfg:    types.NewResumeCfg(),
+		Browser:      e.browserInstance,
+		Parser:       e.parser,
+		InputHelper:  input.NewHelper(),
+	}
+	if e.opts.ShouldUseHostError() && e.hostErrCache != nil {
+		e.executerOpts.HostErrorsCache = e.hostErrCache
 	}
 	if len(e.opts.SecretsFile) > 0 {
 		authTmplStore, err := runner.GetAuthTmplStore(*e.opts, e.catalog, e.executerOpts)
@@ -216,5 +231,32 @@ func (e *NucleiEngine) init(ctx context.Context) error {
 		e.httpxClient = nucleiUtils.GetInputLivenessChecker(client)
 	}
 
+	// Only Happens once regardless how many times this function is called
+	// This will update ignore file to filter out templates with weak matchers to avoid false positives
+	// and also upgrade templates to latest version if available
+	installer.NucleiSDKVersionCheck()
+
+	if DefaultConfig.CanCheckForUpdates() {
+		return e.processUpdateCheckResults()
+	}
 	return nil
+}
+
+type syncOnce struct {
+	sync.Once
+}
+
+var updateCheckInstance = &syncOnce{}
+
+// processUpdateCheckResults processes update check results
+func (e *NucleiEngine) processUpdateCheckResults() error {
+	var err error
+	updateCheckInstance.Do(func() {
+		if e.onUpdateAvailableCallback != nil {
+			e.onUpdateAvailableCallback(config.DefaultConfig.LatestNucleiTemplatesVersion)
+		}
+		tm := installer.TemplateManager{}
+		err = tm.UpdateIfOutdated()
+	})
+	return err
 }

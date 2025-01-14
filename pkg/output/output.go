@@ -21,6 +21,7 @@ import (
 	"github.com/logrusorgru/aurora"
 
 	"github.com/iami317/nuclei/v3/internal/colorizer"
+	"github.com/iami317/nuclei/v3/pkg/catalog/config"
 	"github.com/iami317/nuclei/v3/pkg/model"
 	"github.com/iami317/nuclei/v3/pkg/model/types/severity"
 	"github.com/iami317/nuclei/v3/pkg/operators"
@@ -131,29 +132,30 @@ func (iwe *InternalWrappedEvent) SetOperatorResult(operatorResult *operators.Res
 
 // ResultEvent is a wrapped result event for a single nuclei output.
 type ResultEvent struct {
-	// Template是模板的相对文件名
+	// Template is the relative filename for the template
 	Template string `json:"template,omitempty"`
-	// TemplateURL是结果在核模板存储库中的模板的URL，如果它属于存储库的话。
+	// TemplateURL is the URL of the template for the result inside the nuclei
+	// templates repository if it belongs to the repository.
 	TemplateURL string `json:"template-url,omitempty"`
-	// TemplateID是结果的模板ID。
+	// TemplateID is the ID of the template for the result.
 	TemplateID string `json:"template-id"`
-	// TemplatePath为模板路径
+	// TemplatePath is the path of template
 	TemplatePath string `json:"template-path,omitempty"`
-	// TemplateEncoded是base64编码的模板
+	// TemplateEncoded is the base64 encoded template
 	TemplateEncoded string `json:"template-encoded,omitempty"`
-	// Info包含结果模板的信息块。
+	// Info contains information block of the template for the result.
 	Info model.Info `json:"info,inline"`
-	// MatcherName是匹配的匹配器的名称（如果有的话）。
+	// MatcherName is the name of the matcher matched if any.
 	MatcherName string `json:"matcher-name,omitempty"`
-	// ExtractorName是匹配的提取器的名称（如果有）。
+	// ExtractorName is the name of the extractor matched if any.
 	ExtractorName string `json:"extractor-name,omitempty"`
-	// Type是结果事件的类型。
+	// Type is the type of the result event.
 	Type string `json:"type"`
-	// Host是找到匹配的主机输入。
+	// Host is the host input on which match was found.
 	Host string `json:"host,omitempty"`
-	// Port是找到匹配的主机输入的端口（如果适用）。
+	// Port is port of the host input on which match was found (if applicable).
 	Port string `json:"port,omitempty"`
-	// Scheme是找到匹配的主机输入的模式（如果适用）。
+	// Scheme is the scheme of the host input on which match was found (if applicable).
 	Scheme string `json:"scheme,omitempty"`
 	// URL is the Base URL of the host input on which match was found (if applicable).
 	URL string `json:"url,omitempty"`
@@ -163,9 +165,9 @@ type ResultEvent struct {
 	Matched string `json:"matched-at,omitempty"`
 	// ExtractedResults contains the extraction result from the inputs.
 	ExtractedResults []string `json:"extracted-results,omitempty"`
-	// Request是可选的、转储的匹配请求。
+	// Request is the optional, dumped request for the match.
 	Request string `json:"request,omitempty"`
-	// Response是匹配的可选转储响应。
+	// Response is the optional, dumped response for the match.
 	Response string `json:"response,omitempty"`
 	// Metadata contains any optional metadata for the event
 	Metadata map[string]interface{} `json:"meta,omitempty"`
@@ -182,6 +184,9 @@ type ResultEvent struct {
 	MatcherStatus bool `json:"matcher-status"`
 	// Lines is the line count for the specified match
 	Lines []int `json:"matched-line,omitempty"`
+	// GlobalMatchers identifies whether the matches was detected in the response
+	// of another template's result event
+	GlobalMatchers bool `json:"global-matchers,omitempty"`
 
 	// IssueTrackers is the metadata for issue trackers
 	IssueTrackers map[string]IssueTrackerMetadata `json:"issue_trackers,omitempty"`
@@ -196,6 +201,7 @@ type ResultEvent struct {
 	FuzzingMethod    string `json:"fuzzing_method,omitempty"`
 	FuzzingParameter string `json:"fuzzing_parameter,omitempty"`
 	FuzzingPosition  string `json:"fuzzing_position,omitempty"`
+	AnalyzerDetails  string `json:"analyzer_details,omitempty"`
 
 	FileToIndexPosition map[string]int `json:"-"`
 	TemplateVerifier    string         `json:"-"`
@@ -485,7 +491,7 @@ var maxTemplateFileSizeForEncoding = unitutils.Mega
 
 func (w *StandardWriter) encodeTemplate(templatePath string) string {
 	data, err := os.ReadFile(templatePath)
-	if err == nil && !w.omitTemplate && len(data) <= maxTemplateFileSizeForEncoding {
+	if err == nil && !w.omitTemplate && len(data) <= maxTemplateFileSizeForEncoding && config.DefaultConfig.IsCustomTemplate(templatePath) {
 		return base64.StdEncoding.EncodeToString(data)
 	}
 	return ""

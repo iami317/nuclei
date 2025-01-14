@@ -17,6 +17,7 @@ import (
 	"go.uber.org/multierr"
 	"moul.io/http2curl"
 
+	"github.com/iami317/nuclei/v3/pkg/fuzz/analyzers"
 	"github.com/iami317/nuclei/v3/pkg/operators"
 	"github.com/iami317/nuclei/v3/pkg/output"
 	"github.com/iami317/nuclei/v3/pkg/protocols"
@@ -845,6 +846,7 @@ func (request *Request) executeRequest(input *contextargs.Context, generatedRequ
 			outputEvent["ip"] = input.MetaInput.CustomIP
 		} else {
 			outputEvent["ip"] = protocolstate.Dialer.GetDialedIP(hostname)
+			// try getting cname
 			request.addCNameIfAvailable(hostname, outputEvent)
 		}
 
@@ -926,7 +928,25 @@ func (request *Request) executeRequest(input *contextargs.Context, generatedRequ
 				matchedURL = responseURL
 			}
 		}
+
 		finalEvent := make(output.InternalEvent)
+
+		if request.Analyzer != nil {
+			analyzer := analyzers.GetAnalyzer(request.Analyzer.Name)
+			analysisMatched, analysisDetails, err := analyzer.Analyze(&analyzers.Options{
+				FuzzGenerated:      generatedRequest.fuzzGeneratedRequest,
+				HttpClient:         request.httpClient,
+				ResponseTimeDelay:  duration,
+				AnalyzerParameters: request.Analyzer.Parameters,
+			})
+			if err != nil {
+				gologger.Warning().Msgf("Could not analyze response: %v\n", err)
+			}
+			if analysisMatched {
+				finalEvent["analyzer_details"] = analysisDetails
+				finalEvent["analyzer"] = true
+			}
+		}
 
 		outputEvent := request.responseToDSLMap(respChain.Response(), input.MetaInput.Input, matchedURL, convUtil.String(dumpedRequest), respChain.FullResponse().String(), respChain.Body().String(), respChain.Headers().String(), duration, generatedRequest.meta)
 		// add response fields to template context and merge templatectx variables to output event
@@ -972,11 +992,20 @@ func (request *Request) executeRequest(input *contextargs.Context, generatedRequ
 		// prune signature internal values if any
 		request.pruneSignatureInternalValues(generatedRequest.meta)
 
-		event := eventcreator.CreateEventWithAdditionalOptions(request, generators.MergeMaps(generatedRequest.dynamicValues, finalEvent), request.options.Options.Debug || request.options.Options.DebugResponse, func(internalWrappedEvent *output.InternalWrappedEvent) {
+		interimEvent := generators.MergeMaps(generatedRequest.dynamicValues, finalEvent)
+		isDebug := request.options.Options.Debug || request.options.Options.DebugResponse
+		event := eventcreator.CreateEventWithAdditionalOptions(request, interimEvent, isDebug, func(internalWrappedEvent *output.InternalWrappedEvent) {
 			internalWrappedEvent.OperatorsResult.PayloadValues = generatedRequest.meta
 		})
+
 		if hasInteractMatchers {
 			event.UsesInteractsh = true
+		}
+
+		if request.options.GlobalMatchers.HasMatchers() {
+			request.options.GlobalMatchers.Match(interimEvent, request.Match, request.Extract, isDebug, func(event output.InternalEvent, result *operators.Result) {
+				callback(eventcreator.CreateEventWithOperatorResults(request, event, result))
+			})
 		}
 
 		// if requrlpattern is enabled, only then it is reflected in result event else it is empty string

@@ -3,6 +3,7 @@ package runner
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/iami317/nuclei/v3/pkg/authprovider/authx"
 	"github.com/iami317/nuclei/v3/pkg/catalog"
@@ -10,9 +11,12 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/output"
 	"github.com/iami317/nuclei/v3/pkg/protocols"
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/contextargs"
+	"github.com/iami317/nuclei/v3/pkg/protocols/common/generators"
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/helpers/writer"
+	"github.com/iami317/nuclei/v3/pkg/protocols/common/replacer"
 	"github.com/iami317/nuclei/v3/pkg/scan"
 	"github.com/iami317/nuclei/v3/pkg/types"
+	"github.com/projectdiscovery/utils/env"
 	errorutil "github.com/projectdiscovery/utils/errors"
 )
 
@@ -75,7 +79,25 @@ func GetLazyAuthFetchCallback(opts *AuthLazyFetchOptions) authx.LazyFetchSecret 
 		vars := map[string]interface{}{}
 		mainCtx := context.Background()
 		ctx := scan.NewScanContext(mainCtx, contextargs.NewWithInput(mainCtx, d.Input))
+
+		cliVars := map[string]interface{}{}
+		if opts.ExecOpts.Options != nil {
+			// gets variables passed from cli -v and -env-vars
+			cliVars = generators.BuildPayloadFromOptions(opts.ExecOpts.Options)
+		}
+
 		for _, v := range d.Variables {
+			//  Check if the template has any env variables and expand them
+			if strings.HasPrefix(v.Value, "$") {
+				env.ExpandWithEnv(&v.Value)
+			}
+			if strings.Contains(v.Value, "{{") {
+				// if variables had value like {{username}}, then replace it with the value from cliVars
+				// variables:
+				//     - key: username
+				//       value: {{username}}
+				v.Value = replacer.Replace(v.Value, cliVars)
+			}
 			vars[v.Key] = v.Value
 			ctx.Input.Add(v.Key, v.Value)
 		}
