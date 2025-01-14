@@ -46,7 +46,7 @@ func LoadTemplatesWithTags(opts Options, templateDirs []string, tags []string, l
 		finalTemplates, clusterCount := templates.ClusterTemplates(finalTemplates, opts.ExecuterOpts)
 		totalReqAfterClustering := getRequestCount(finalTemplates) * int(opts.Target.Count())
 		if totalReqAfterClustering < totalReqBeforeCluster && logInfo {
-			gologger.Info().Msgf("Automatic scan tech-detect: Templates clustered: %d (Reduced %d Requests)", clusterCount, totalReqBeforeCluster-totalReqAfterClustering)
+			gologger.Verbose().Msgf("Automatic scan tech-detect: Templates clustered: %d (Reduced %d Requests)", clusterCount, totalReqBeforeCluster-totalReqAfterClustering)
 		}
 	}
 
