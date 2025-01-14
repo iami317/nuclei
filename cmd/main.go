@@ -13,9 +13,7 @@ import (
 	"strings"
 	"time"
 
-	_pdcp "github.com/iami317/nuclei/v3/internal/pdcp"
 	"github.com/projectdiscovery/utils/auth/pdcp"
-	"github.com/projectdiscovery/utils/env"
 	_ "github.com/projectdiscovery/utils/pprof"
 	stringsutil "github.com/projectdiscovery/utils/strings"
 
@@ -143,13 +141,6 @@ func main() {
 
 	runner.ParseOptions(options)
 
-	if options.ScanUploadFile != "" {
-		if err := runner.UploadResultsToCloud(options); err != nil {
-			gologger.Fatal().Msgf("could not upload scan results to cloud dashboard: %s\n", err)
-		}
-		return
-	}
-
 	nucleiRunner, err := runner.New(options)
 	if err != nil {
 		gologger.Fatal().Msgf("Could not create runner: %s\n", err)
@@ -164,9 +155,6 @@ func main() {
 		defer cancel()
 		stackMonitor.RegisterCallback(func(dumpID string) error {
 			resumeFileName := fmt.Sprintf("crash-resume-file-%s.dump", dumpID)
-			if options.EnableCloudUpload {
-				gologger.Info().Msgf("Uploading scan results to cloud...")
-			}
 			nucleiRunner.Close()
 			gologger.Info().Msgf("Creating resume file: %s\n", resumeFileName)
 			err := nucleiRunner.SaveResumeConfig(resumeFileName)
@@ -186,9 +174,6 @@ func main() {
 		for range c {
 			gologger.Info().Msgf("CTRL+C pressed: Exiting\n")
 			gologger.Info().Msgf("Attempting graceful shutdown...")
-			if options.EnableCloudUpload {
-				gologger.Info().Msgf("Uploading scan results to cloud...")
-			}
 			nucleiRunner.Close()
 			if options.ShouldSaveResume() {
 				gologger.Info().Msgf("Creating resume file: %s\n", resumeFileName)
@@ -219,7 +204,7 @@ func readConfig() *goflags.FlagSet {
 
 	// when true updates nuclei binary to latest version
 	var updateNucleiBinary bool
-	var pdcpauth string
+	//var pdcpauth string
 	var fuzzFlag bool
 
 	flagSet := goflags.NewFlagSet()
@@ -448,16 +433,6 @@ on extensive configurability, massive extensibility and ease of use.`)
 		flagSet.IntVarP(&options.MetricsPort, "metrics-port", "mp", 9092, "port to expose nuclei metrics on"),
 	)
 
-	flagSet.CreateGroup("cloud", "Cloud",
-		flagSet.DynamicVar(&pdcpauth, "auth", "true", "configure projectdiscovery cloud (pdcp) api key"),
-		flagSet.StringVarP(&options.TeamID, "team-id", "tid", _pdcp.TeamIDEnv, "upload scan results to given team id (optional)"),
-		flagSet.BoolVarP(&options.EnableCloudUpload, "cloud-upload", "cup", false, "upload scan results to pdcp dashboard [DEPRECATED use -dashboard]"),
-		flagSet.StringVarP(&options.ScanID, "scan-id", "sid", "", "upload scan results to existing scan id (optional)"),
-		flagSet.StringVarP(&options.ScanName, "scan-name", "sname", "", "scan name to set (optional)"),
-		flagSet.BoolVarP(&options.EnableCloudUpload, "dashboard", "pd", false, "upload / view nuclei results in projectdiscovery cloud (pdcp) UI dashboard"),
-		flagSet.StringVarP(&options.ScanUploadFile, "dashboard-upload", "pdu", "", "upload / view nuclei results file (jsonl) in projectdiscovery cloud (pdcp) UI dashboard"),
-	)
-
 	flagSet.CreateGroup("Authentication", "Authentication",
 		flagSet.StringSliceVarP(&options.SecretsFile, "secret-file", "sf", nil, "path to config file containing secrets for nuclei authenticated scan", goflags.CommaSeparatedStringSliceOptions),
 		flagSet.BoolVarP(&options.PreFetchSecrets, "prefetch-secrets", "ps", false, "prefetch secrets from the secrets file"),
@@ -501,17 +476,17 @@ Additional documentation is available at: https://docs.nuclei.sh/getting-started
 	}
 
 	// api key hierarchy: cli flag > env var > .pdcp/credential file
-	if pdcpauth == "true" {
-		runner.AuthWithPDCP()
-	} else if len(pdcpauth) == 36 {
-		ph := pdcp.PDCPCredHandler{}
-		if _, err := ph.GetCreds(); err == pdcp.ErrNoCreds {
-			apiServer := env.GetEnvOrDefault("PDCP_API_SERVER", pdcp.DefaultApiServer)
-			if validatedCreds, err := ph.ValidateAPIKey(pdcpauth, apiServer, config.BinaryName); err == nil {
-				_ = ph.SaveCreds(validatedCreds)
-			}
-		}
-	}
+	//if pdcpauth == "true" {
+	//	runner.AuthWithPDCP()
+	//} else if len(pdcpauth) == 36 {
+	//	ph := pdcp.PDCPCredHandler{}
+	//	if _, err := ph.GetCreds(); err == pdcp.ErrNoCreds {
+	//		apiServer := env.GetEnvOrDefault("PDCP_API_SERVER", pdcp.DefaultApiServer)
+	//		if validatedCreds, err := ph.ValidateAPIKey(pdcpauth, apiServer, config.BinaryName); err == nil {
+	//			_ = ph.SaveCreds(validatedCreds)
+	//		}
+	//	}
+	//}
 
 	gologger.DefaultLogger.SetTimestamp(options.Timestamp, levels.LevelDebug)
 

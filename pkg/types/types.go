@@ -394,15 +394,15 @@ type Options struct {
 	// EnableFileTemplates enables file templates
 	EnableFileTemplates bool
 	// Disables cloud upload
-	EnableCloudUpload bool
+	//EnableCloudUpload bool
 	// ScanID is the scan ID to use for cloud upload
-	ScanID string
+	//ScanID string
 	// ScanName is the name of the scan to be uploaded
-	ScanName string
+	//ScanName string
 	// ScanUploadFile is the jsonl file to upload scan results to cloud
-	ScanUploadFile string
+	//ScanUploadFile string
 	// TeamID is the team ID to use for cloud upload
-	TeamID string
+	//TeamID string
 	// JsConcurrency is the number of concurrent js routines to run
 	JsConcurrency int
 	// SecretsFile is file containing secrets for nuclei
