@@ -1,8 +1,7 @@
 package mssql
 
 import (
-	//"github.com/iami317/nuclei/v3/pkg/js/libs/mssql"
-	//_ "github.com/iami317/nuclei/v3/pkg/js/libs/mssql"
+	lib_mssql "github.com/iami317/nuclei/v3/pkg/js/libs/mssql"
 
 	"github.com/dop251/goja"
 	"github.com/iami317/nuclei/v3/pkg/js/gojs"
@@ -20,7 +19,7 @@ func init() {
 			// Var and consts
 
 			// Objects / Classes
-			//"MSSQLClient": gojs.GetClassConstructor[mssql.MSSQLClient](&mssql.MSSQLClient{}),
+			"MSSQLClient": gojs.GetClassConstructor[lib_mssql.MSSQLClient](&lib_mssql.MSSQLClient{}),
 		},
 	).Register()
 }

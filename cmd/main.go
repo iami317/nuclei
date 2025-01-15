@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io/fs"
 	"os"
@@ -140,7 +141,8 @@ func main() {
 	}
 
 	runner.ParseOptions(options)
-
+	bb, err := json.Marshal(options)
+	fmt.Println(1111111, string(bb), err)
 	nucleiRunner, err := runner.New(options)
 	if err != nil {
 		gologger.Fatal().Msgf("Could not create runner: %s\n", err)
@@ -148,7 +150,6 @@ func main() {
 	if nucleiRunner == nil {
 		return
 	}
-
 	if options.HangMonitor {
 		stackMonitor := monitor.NewStackMonitor()
 		cancel := stackMonitor.Start(10 * time.Second)
@@ -164,7 +165,6 @@ func main() {
 			return nil
 		})
 	}
-
 	// Setup graceful exits
 	resumeFileName := types.DefaultResumeFilePath()
 	c := make(chan os.Signal, 1)
