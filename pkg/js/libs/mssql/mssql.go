@@ -1,19 +1,19 @@
 package mssql
 
-import (
-	_ "github.com/microsoft/go-mssqldb"
-)
+//import (
+//	_ "github.com/microsoft/go-mssqldb"
+//)
 
-type (
-	// Client is a client for MS SQL database.
-	// Internally client uses microsoft/go-mssqldb driver.
-	// @example
-	// ```javascript
-	// const mssql = require('nuclei/mssql');
-	// const client = new mssql.MSSQLClient;
-	// ```
-	MSSQLClient struct{}
-)
+//type (
+// Client is a client for MS SQL database.
+// Internally client uses microsoft/go-mssqldb driver.
+// @example
+// ```javascript
+// const mssql = require('nuclei/mssql');
+// const client = new mssql.MSSQLClient;
+// ```
+//MSSQLClient struct{}
+//)
 
 // Connect connects to MS SQL database using given credentials.
 // If connection is successful, it returns true.
