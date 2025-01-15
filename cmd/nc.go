@@ -20,9 +20,9 @@ func main() {
 		"http://59.54.14.247:8082",
 	}
 
-	//pocPath := []string{"/Users/meng/go/src/hzbas/bas-attack/cmd/.conf/poc_script"}
+	pocPath := []string{"/Users/meng/go/src/hzbas/bas-attack/cmd/.conf/poc_script"}
 	//pocPath := []string{"/Users/meng/nuclei-templates/"}
-	pocPath := []string{"cmd/pocs"}
+	//pocPath := []string{"cmd/pocs"}
 	ne, _ := ncx.NewNucleiEngineCtx(
 		context.Background(),
 		ncx.WithTemplatesOrWorkflows(ncx.TemplateSources{
