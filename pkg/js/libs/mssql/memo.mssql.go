@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	_ "github.com/microsoft/go-mssqldb"
+	//_ "github.com/microsoft/go-mssqldb"
 
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/protocolstate"
 )
