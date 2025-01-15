@@ -240,7 +240,7 @@ type Options struct {
 	// TemplateList lists available tags
 	TagList bool `json:"tag_list"`
 	// HangMonitor enables nuclei hang monitoring
-	HangMonitor bool `json:"hang_monitor"`
+	//HangMonitor bool `json:"hang_monitor"`
 	// Stdin specifies whether stdin input was given to the process
 	Stdin bool `json:"stdin"`
 	// StopAtFirstMatch stops processing template at first full match (this may break chained requests)
@@ -383,7 +383,7 @@ type Options struct {
 	CodeTemplateSignatureAlgorithm string `json:"code_template_signature_algorithm"`
 	// SignTemplates enables signing of templates
 	SignTemplates bool `json:"sign_templates"`
-	// EnableCodeTemplates enables code templates
+	// EnableCodeTemplates 启用代码模板
 	EnableCodeTemplates bool `json:"enable_code_templates"`
 	// DisableUnsignedTemplates disables processing of unsigned templates
 	DisableUnsignedTemplates bool `json:"disable_unsigned_templates"`
