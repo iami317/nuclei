@@ -71,7 +71,7 @@ var (
 	// HideAutoSaveMsg is a global variable to hide the auto-save message
 	HideAutoSaveMsg = false
 	// EnableCloudUpload is global variable to enable cloud upload
-	//EnableCloudUpload = false
+	EnableCloudUpload = false
 )
 
 // Runner is a client for running the enumeration process.
@@ -401,13 +401,13 @@ func (r *Runner) Close() {
 // by creating a new writer and returning it
 func (r *Runner) setupPDCPUpload(writer output.Writer) output.Writer {
 	// if scanid is given implicitly consider that scan upload is enabled
-	//if r.options.ScanID != "" {
-	//	r.options.EnableCloudUpload = true
-	//}
-	//if !(r.options.EnableCloudUpload || EnableCloudUpload) {
-	//	r.pdcpUploadErrMsg = fmt.Sprintf("[%v] Scan results upload to cloud is disabled.", r.colorizer.BrightYellow("WRN"))
-	//	return writer
-	//}
+	if r.options.ScanID != "" {
+		r.options.EnableCloudUpload = true
+	}
+	if !(r.options.EnableCloudUpload || EnableCloudUpload) {
+		r.pdcpUploadErrMsg = fmt.Sprintf("[%v] Scan results upload to cloud is disabled.", r.colorizer.BrightYellow("WRN"))
+		return writer
+	}
 	color := aurora.NewAurora(!r.options.NoColor)
 	h := &pdcpauth.PDCPCredHandler{}
 	creds, err := h.GetCreds()
@@ -423,16 +423,16 @@ func (r *Runner) setupPDCPUpload(writer output.Writer) output.Writer {
 		r.pdcpUploadErrMsg = fmt.Sprintf("[%v] PDCP (%v) Auto-Save Failed: %s\n", color.BrightYellow("WRN"), pdcpauth.DashBoardURL, err)
 		return writer
 	}
-	//if r.options.ScanID != "" {
-	//	// ignore and use empty scan id if invalid
-	//	_ = uploadWriter.SetScanID(r.options.ScanID)
-	//}
-	//if r.options.ScanName != "" {
-	//	uploadWriter.SetScanName(r.options.ScanName)
-	//}
-	//if r.options.TeamID != "" {
-	//	uploadWriter.SetTeamID(r.options.TeamID)
-	//}
+	if r.options.ScanID != "" {
+		// ignore and use empty scan id if invalid
+		_ = uploadWriter.SetScanID(r.options.ScanID)
+	}
+	if r.options.ScanName != "" {
+		uploadWriter.SetScanName(r.options.ScanName)
+	}
+	if r.options.TeamID != "" {
+		uploadWriter.SetTeamID(r.options.TeamID)
+	}
 	return output.NewMultiWriter(writer, uploadWriter)
 }
 
@@ -750,23 +750,23 @@ func (r *Runner) displayExecutionInfo(store *loader.Store) {
 	cfg := config.DefaultConfig
 
 	updateutils.Aurora = r.colorizer
-	gologger.Verbose().Msgf("current ncx version: %v %v", config.Version, updateutils.GetVersionDescription(config.Version, cfg.LatestNucleiVersion))
-	gologger.Verbose().Msgf("current templates version: %v %v", cfg.TemplateVersion, updateutils.GetVersionDescription(cfg.TemplateVersion, cfg.LatestNucleiTemplatesVersion))
+	gologger.Info().Msgf("Current nuclei version: %v %v", config.Version, updateutils.GetVersionDescription(config.Version, cfg.LatestNucleiVersion))
+	gologger.Info().Msgf("Current nuclei-templates version: %v %v", cfg.TemplateVersion, updateutils.GetVersionDescription(cfg.TemplateVersion, cfg.LatestNucleiTemplatesVersion))
 	if !HideAutoSaveMsg {
 		if r.pdcpUploadErrMsg != "" {
 			gologger.Print().Msgf("%s", r.pdcpUploadErrMsg)
 		} else {
-			gologger.Verbose().Msgf("To view results on cloud dashboard, visit %v/scans upon scan completion.", pdcpauth.DashBoardURL)
+			gologger.Info().Msgf("To view results on cloud dashboard, visit %v/scans upon scan completion.", pdcpauth.DashBoardURL)
 		}
 	}
 
 	if tmplCount > 0 || workflowCount > 0 {
 		if len(store.Templates()) > 0 {
-			gologger.Verbose().Msgf("New templates added in latest release: %d", len(config.DefaultConfig.GetNewAdditions()))
-			gologger.Verbose().Msgf("Templates loaded for current scan: %d", len(store.Templates()))
+			gologger.Info().Msgf("New templates added in latest release: %d", len(config.DefaultConfig.GetNewAdditions()))
+			gologger.Info().Msgf("Templates loaded for current scan: %d", len(store.Templates()))
 		}
 		if len(store.Workflows()) > 0 {
-			gologger.Verbose().Msgf("Workflows loaded for current scan: %d", len(store.Workflows()))
+			gologger.Info().Msgf("Workflows loaded for current scan: %d", len(store.Workflows()))
 		}
 		for k, v := range templates.SignatureStats {
 			value := v.Load()
@@ -781,7 +781,7 @@ func (r *Runner) displayExecutionInfo(store *loader.Store) {
 	}
 
 	if r.inputProvider.Count() > 0 {
-		gologger.Verbose().Msgf("Targets loaded for current scan: %d", r.inputProvider.Count())
+		gologger.Info().Msgf("Targets loaded for current scan: %d", r.inputProvider.Count())
 	}
 }
 
@@ -801,50 +801,50 @@ func (r *Runner) SaveResumeConfig(path string) error {
 }
 
 // upload existing scan results to cloud with progress
-//func UploadResultsToCloud(options *types.Options) error {
-//	h := &pdcpauth.PDCPCredHandler{}
-//	creds, err := h.GetCreds()
-//	if err != nil {
-//		return errors.Wrap(err, "could not get credentials for cloud upload")
-//	}
-//	ctx := context.TODO()
-//	uploadWriter, err := pdcp.NewUploadWriter(ctx, creds)
-//	if err != nil {
-//		return errors.Wrap(err, "could not create upload writer")
-//	}
-//	if options.ScanID != "" {
-//		_ = uploadWriter.SetScanID(options.ScanID)
-//	}
-//	if options.ScanName != "" {
-//		uploadWriter.SetScanName(options.ScanName)
-//	}
-//	if options.TeamID != "" {
-//		uploadWriter.SetTeamID(options.TeamID)
-//	}
-//
-//	// Open file to count the number of results first
-//	file, err := os.Open(options.ScanUploadFile)
-//	if err != nil {
-//		return errors.Wrap(err, "could not open scan upload file")
-//	}
-//	defer file.Close()
-//
-//	gologger.Info().Msgf("Uploading scan results to cloud dashboard from %s", options.ScanUploadFile)
-//	dec := json.NewDecoder(file)
-//	for dec.More() {
-//		var r output.ResultEvent
-//		err := dec.Decode(&r)
-//		if err != nil {
-//			gologger.Warning().Msgf("Could not decode jsonl: %s\n", err)
-//			continue
-//		}
-//		if err = uploadWriter.Write(&r); err != nil {
-//			gologger.Warning().Msgf("[%s] failed to upload: %s\n", r.TemplateID, err)
-//		}
-//	}
-//	uploadWriter.Close()
-//	return nil
-//}
+func UploadResultsToCloud(options *types.Options) error {
+	h := &pdcpauth.PDCPCredHandler{}
+	creds, err := h.GetCreds()
+	if err != nil {
+		return errors.Wrap(err, "could not get credentials for cloud upload")
+	}
+	ctx := context.TODO()
+	uploadWriter, err := pdcp.NewUploadWriter(ctx, creds)
+	if err != nil {
+		return errors.Wrap(err, "could not create upload writer")
+	}
+	if options.ScanID != "" {
+		_ = uploadWriter.SetScanID(options.ScanID)
+	}
+	if options.ScanName != "" {
+		uploadWriter.SetScanName(options.ScanName)
+	}
+	if options.TeamID != "" {
+		uploadWriter.SetTeamID(options.TeamID)
+	}
+
+	// Open file to count the number of results first
+	file, err := os.Open(options.ScanUploadFile)
+	if err != nil {
+		return errors.Wrap(err, "could not open scan upload file")
+	}
+	defer file.Close()
+
+	gologger.Info().Msgf("Uploading scan results to cloud dashboard from %s", options.ScanUploadFile)
+	dec := json.NewDecoder(file)
+	for dec.More() {
+		var r output.ResultEvent
+		err := dec.Decode(&r)
+		if err != nil {
+			gologger.Warning().Msgf("Could not decode jsonl: %s\n", err)
+			continue
+		}
+		if err = uploadWriter.Write(&r); err != nil {
+			gologger.Warning().Msgf("[%s] failed to upload: %s\n", r.TemplateID, err)
+		}
+	}
+	uploadWriter.Close()
+	return nil
+}
 
 type WalkFunc func(reflect.Value, reflect.StructField)
 
@@ -897,5 +897,5 @@ func expandEndVars(f reflect.Value, fieldType reflect.StructField) {
 
 func init() {
 	HideAutoSaveMsg = env.GetEnvOrDefault("DISABLE_CLOUD_UPLOAD_WRN", false)
-	//EnableCloudUpload = env.GetEnvOrDefault("ENABLE_CLOUD_UPLOAD", false)
+	EnableCloudUpload = env.GetEnvOrDefault("ENABLE_CLOUD_UPLOAD", false)
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io/fs"
 	"os"
@@ -31,7 +32,6 @@ import (
 	templateTypes "github.com/iami317/nuclei/v3/pkg/templates/types"
 	"github.com/iami317/nuclei/v3/pkg/types"
 	"github.com/iami317/nuclei/v3/pkg/types/scanstrategy"
-	"github.com/iami317/nuclei/v3/pkg/utils/monitor"
 	"github.com/projectdiscovery/goflags"
 	"github.com/projectdiscovery/gologger"
 	"github.com/projectdiscovery/gologger/levels"
@@ -140,7 +140,8 @@ func main() {
 	}
 
 	runner.ParseOptions(options)
-
+	bb, err := json.Marshal(options)
+	fmt.Println(1111111, string(bb), err)
 	nucleiRunner, err := runner.New(options)
 	if err != nil {
 		gologger.Fatal().Msgf("Could not create runner: %s\n", err)
@@ -148,23 +149,21 @@ func main() {
 	if nucleiRunner == nil {
 		return
 	}
-
-	if options.HangMonitor {
-		stackMonitor := monitor.NewStackMonitor()
-		cancel := stackMonitor.Start(10 * time.Second)
-		defer cancel()
-		stackMonitor.RegisterCallback(func(dumpID string) error {
-			resumeFileName := fmt.Sprintf("crash-resume-file-%s.dump", dumpID)
-			nucleiRunner.Close()
-			gologger.Info().Msgf("Creating resume file: %s\n", resumeFileName)
-			err := nucleiRunner.SaveResumeConfig(resumeFileName)
-			if err != nil {
-				return errorutil.NewWithErr(err).Msgf("couldn't create crash resume file")
-			}
-			return nil
-		})
-	}
-
+	//if options.HangMonitor {
+	//	stackMonitor := monitor.NewStackMonitor()
+	//	cancel := stackMonitor.Start(10 * time.Second)
+	//	defer cancel()
+	//	stackMonitor.RegisterCallback(func(dumpID string) error {
+	//		resumeFileName := fmt.Sprintf("crash-resume-file-%s.dump", dumpID)
+	//		nucleiRunner.Close()
+	//		gologger.Info().Msgf("Creating resume file: %s\n", resumeFileName)
+	//		err := nucleiRunner.SaveResumeConfig(resumeFileName)
+	//		if err != nil {
+	//			return errorutil.NewWithErr(err).Msgf("couldn't create crash resume file")
+	//		}
+	//		return nil
+	//	})
+	//}
 	// Setup graceful exits
 	resumeFileName := types.DefaultResumeFilePath()
 	c := make(chan os.Signal, 1)
@@ -408,7 +407,7 @@ on extensive configurability, massive extensibility and ease of use.`)
 		flagSet.StringVarP(&options.TraceLogFile, "trace-log", "tlog", "", "file to write sent requests trace log"),
 		flagSet.StringVarP(&options.ErrorLogFile, "error-log", "elog", "", "file to write sent requests error log"),
 		flagSet.CallbackVar(printVersion, "version", "show nuclei version"),
-		flagSet.BoolVarP(&options.HangMonitor, "hang-monitor", "hm", false, "enable nuclei hang monitoring"),
+		//flagSet.BoolVarP(&options.HangMonitor, "hang-monitor", "hm", false, "enable nuclei hang monitoring"),
 		flagSet.BoolVarP(&options.Verbose, "verbose", "v", false, "show verbose output"),
 		flagSet.StringVar(&memProfile, "profile-mem", "", "generate memory (heap) profile & trace files"),
 		flagSet.BoolVar(&options.VerboseVerbose, "vv", false, "display templates loaded for scan"),

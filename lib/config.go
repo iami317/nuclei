@@ -250,9 +250,9 @@ type VerbosityOptions struct {
 // and does not affect SDK output
 func WithVerbosity(opts VerbosityOptions) NucleiSDKOptions {
 	return func(e *NucleiEngine) error {
-		if e.mode == threadSafe {
-			return ErrOptionsNotSupported.Msgf("WithVerbosity")
-		}
+		//if e.mode == threadSafe {
+		//	return ErrOptionsNotSupported.Msgf("WithVerbosity")
+		//}
 		e.opts.Verbose = opts.Verbose
 		e.opts.Silent = opts.Silent
 		e.opts.Debug = opts.Debug

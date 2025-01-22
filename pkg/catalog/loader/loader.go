@@ -37,7 +37,7 @@ const (
 )
 
 var (
-	TrustedTemplateDomains = []string{"cloud.projectdiscovery.io"}
+	TrustedTemplateDomains = []string{""}
 )
 
 // Config contains the configuration options for the loader
