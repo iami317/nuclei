@@ -2,6 +2,8 @@ package nuclei
 
 import (
 	"context"
+	"fmt"
+	"github.com/iami317/nuclei/v3/pkg/templates"
 	"time"
 
 	"github.com/iami317/nuclei/v3/pkg/catalog/loader"
@@ -153,7 +155,13 @@ func (e *ThreadSafeNucleiEngine) ExecuteNucleiWithOptsCtx(ctx context.Context, t
 		return errorutil.New("Could not create loader client: %s\n", err)
 	}
 	store.Load()
-
+	finalTemplates := store.Templates()
+	for _, tpl := range finalTemplates {
+		fmt.Println(fmt.Printf("%s\n", templates.TemplateLogMessage(tpl.ID,
+			types.ToString(tpl.Info.Name),
+			tpl.Info.Authors.ToSlice(),
+			tpl.Info.SeverityHolder.Severity)))
+	}
 	inputProvider := provider.NewSimpleInputProviderWithUrls(targets...)
 
 	if len(store.Templates()) == 0 && len(store.Workflows()) == 0 {
