@@ -603,6 +603,11 @@ const drainReqSize = int64(8 * unitutils.Kilo)
 
 // executeRequest executes the actual generated request and returns error if occurred
 func (request *Request) executeRequest(input *contextargs.Context, generatedRequest *generatedRequest, previousEvent output.InternalEvent, hasInteractMatchers bool, processEvent protocols.OutputEventCallback, requestCount int) (err error) {
+	defer func() {
+		if rc := recover(); rc != nil {
+			gologger.Warning().Msgf("executeRequest panicked")
+		}
+	}()
 	// Check if hosts keep erroring
 	if request.isUnresponsiveAddress(input) {
 		return fmt.Errorf("hostErrorsCache : host %s is unresponsive", input.MetaInput.Input)

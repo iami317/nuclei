@@ -153,7 +153,11 @@ func (e *ThreadSafeNucleiEngine) ExecuteNucleiWithOptsCtx(ctx context.Context, t
 		return errorutil.New("Could not create loader client: %s\n", err)
 	}
 	store.Load()
-
+	//finalTemplates := store.Templates()
+	//for _, tpl := range finalTemplates {
+	//	fmt.Println("ID", tpl.ID)
+	//	fmt.Println("Name", tpl.Info.Name)
+	//}
 	inputProvider := provider.NewSimpleInputProviderWithUrls(targets...)
 
 	if len(store.Templates()) == 0 && len(store.Workflows()) == 0 {
