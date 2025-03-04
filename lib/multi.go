@@ -117,7 +117,7 @@ func (e *ThreadSafeNucleiEngine) GlobalLoadAllTemplates() error {
 
 // GlobalResultCallback sets a callback function which will be called for each result
 func (e *ThreadSafeNucleiEngine) GlobalResultCallback(callback func(event *output.ResultEvent)) {
-	e.eng.resultCallbacks = []func(*output.ResultEvent){callback}
+	e.eng.ResultCallbacks = []func(*output.ResultEvent){callback}
 }
 
 // ExecuteNucleiWithOptsCtx executes templates on targets and calls callback on each result(only if results are found)

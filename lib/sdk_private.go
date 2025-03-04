@@ -43,8 +43,8 @@ var sharedInit *sync.Once
 func (e *NucleiEngine) applyRequiredDefaults(ctx context.Context) {
 	mockoutput := testutils.NewMockOutputWriter(e.opts.OmitTemplate)
 	mockoutput.WriteCallback = func(event *output.ResultEvent) {
-		if len(e.resultCallbacks) > 0 {
-			for _, callback := range e.resultCallbacks {
+		if len(e.ResultCallbacks) > 0 {
+			for _, callback := range e.ResultCallbacks {
 				if callback != nil {
 					callback(event)
 				}

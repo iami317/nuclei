@@ -54,7 +54,7 @@ const (
 // runs scans using templates and returns results
 type NucleiEngine struct {
 	// user options
-	resultCallbacks             []func(event *output.ResultEvent)
+	ResultCallbacks             []func(event *output.ResultEvent)
 	onFailureCallback           func(event *output.InternalEvent)
 	disableTemplatesAutoUpgrade bool
 	enableStats                 bool
@@ -251,7 +251,7 @@ func (e *NucleiEngine) ExecuteCallbackWithCtx(ctx context.Context, callback ...f
 			filtered = append(filtered, callback)
 		}
 	}
-	e.resultCallbacks = append(e.resultCallbacks, filtered...)
+	e.ResultCallbacks = append(e.ResultCallbacks, filtered...)
 
 	templatesAndWorkflows := append(e.store.Templates(), e.store.Workflows()...)
 	if len(templatesAndWorkflows) == 0 {
