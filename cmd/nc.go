@@ -21,6 +21,10 @@ func main() {
 		"http://192.168.101.60:61616",
 	}
 
+	defer func() {
+		fmt.Println("-----game ovre----")
+	}()
+
 	//pocPath := []string{""}
 	//pocPath := []string{"/Users/meng/go/src/hzbas/bas-attack/cmd/.conf/poc_script/d3db572b-da11-4ac1-a3de-7f5641c50e13.yaml"}
 	pocPath := []string{"/Users/meng/go/src/hzbas/bas-attack/cmd/.conf/poc_script"}
@@ -54,4 +58,5 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
+
 }

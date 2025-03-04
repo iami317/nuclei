@@ -81,7 +81,7 @@ func closeEphemeralObjects(u *unsafeOptions) {
 // ThreadSafeNucleiEngine is a tweaked version of nuclei.Engine whose methods are thread-safe
 // and can be used concurrently. Non-thread-safe methods start with Global prefix
 type ThreadSafeNucleiEngine struct {
-	eng *NucleiEngine
+	Eng *NucleiEngine
 }
 
 // NewThreadSafeNucleiEngine creates a new nuclei engine with given options
@@ -101,7 +101,7 @@ func NewThreadSafeNucleiEngineCtx(ctx context.Context, opts ...NucleiSDKOptions)
 	if err := e.init(ctx); err != nil {
 		return nil, err
 	}
-	return &ThreadSafeNucleiEngine{eng: e}, nil
+	return &ThreadSafeNucleiEngine{Eng: e}, nil
 }
 
 // Deprecated: use NewThreadSafeNucleiEngineCtx instead
@@ -112,12 +112,12 @@ func NewThreadSafeNucleiEngine(opts ...NucleiSDKOptions) (*ThreadSafeNucleiEngin
 // GlobalLoadAllTemplates loads all templates from nuclei-templates repo
 // This method will load all templates based on filters given at the time of nuclei engine creation in opts
 func (e *ThreadSafeNucleiEngine) GlobalLoadAllTemplates() error {
-	return e.eng.LoadAllTemplates()
+	return e.Eng.LoadAllTemplates()
 }
 
 // GlobalResultCallback sets a callback function which will be called for each result
 func (e *ThreadSafeNucleiEngine) GlobalResultCallback(callback func(event *output.ResultEvent)) {
-	e.eng.ResultCallbacks = []func(*output.ResultEvent){callback}
+	e.Eng.ResultCallbacks = []func(*output.ResultEvent){callback}
 }
 
 // ExecuteNucleiWithOptsCtx executes templates on targets and calls callback on each result(only if results are found)
@@ -125,7 +125,7 @@ func (e *ThreadSafeNucleiEngine) GlobalResultCallback(callback func(event *outpu
 // by invoking this method with different options and targets
 // Note: Not all options are thread-safe. this method will throw error if you try to use non-thread-safe options
 func (e *ThreadSafeNucleiEngine) ExecuteNucleiWithOptsCtx(ctx context.Context, targets []string, opts ...NucleiSDKOptions) error {
-	baseOpts := *e.eng.opts
+	baseOpts := *e.Eng.opts
 	tmpEngine := &NucleiEngine{opts: &baseOpts, mode: threadSafe}
 	for _, option := range opts {
 		if err := option(tmpEngine); err != nil {
@@ -134,7 +134,7 @@ func (e *ThreadSafeNucleiEngine) ExecuteNucleiWithOptsCtx(ctx context.Context, t
 	}
 
 	// create ephemeral nuclei objects/instances/types using base nuclei engine
-	unsafeOpts, err := createEphemeralObjects(ctx, e.eng, tmpEngine.opts)
+	unsafeOpts, err := createEphemeralObjects(ctx, e.Eng, tmpEngine.opts)
 	if err != nil {
 		return err
 	}
@@ -148,7 +148,7 @@ func (e *ThreadSafeNucleiEngine) ExecuteNucleiWithOptsCtx(ctx context.Context, t
 	}
 	unsafeOpts.executerOpts.WorkflowLoader = workflowLoader
 
-	store, err := loader.New(loader.NewConfig(tmpEngine.opts, e.eng.catalog, unsafeOpts.executerOpts))
+	store, err := loader.New(loader.NewConfig(tmpEngine.opts, e.Eng.catalog, unsafeOpts.executerOpts))
 	if err != nil {
 		return errorutil.New("Could not create loader client: %s\n", err)
 	}
@@ -184,5 +184,5 @@ func (e *ThreadSafeNucleiEngine) ExecuteNucleiWithOpts(targets []string, opts ..
 
 // Close all resources used by nuclei engine
 func (e *ThreadSafeNucleiEngine) Close() {
-	e.eng.Close()
+	e.Eng.Close()
 }
