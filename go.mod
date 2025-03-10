@@ -20,14 +20,14 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/pkg/errors v0.9.1
 	github.com/projectdiscovery/clistats v0.1.1
-	github.com/projectdiscovery/fastdialer v0.2.14
-	github.com/projectdiscovery/hmap v0.0.73
+	github.com/projectdiscovery/fastdialer v0.3.0
+	github.com/projectdiscovery/hmap v0.0.82
 	github.com/projectdiscovery/interactsh v1.2.2
 	github.com/projectdiscovery/rawhttp v0.1.80
-	github.com/projectdiscovery/retryabledns v1.0.91
-	github.com/projectdiscovery/retryablehttp-go v1.0.93
+	github.com/projectdiscovery/retryabledns v1.0.94
+	github.com/projectdiscovery/retryablehttp-go v1.0.103
 	github.com/projectdiscovery/yamldoc-go v1.0.4
-	github.com/remeh/sizedwaitgroup v1.0.0 // indirect
+	github.com/remeh/sizedwaitgroup v1.0.0
 	github.com/rs/xid v1.5.0
 	github.com/segmentio/ksuid v1.0.4
 	github.com/shirou/gopsutil/v3 v3.24.2 // indirect
@@ -79,13 +79,12 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/mholt/archiver v3.1.1+incompatible
-	github.com/microsoft/go-mssqldb v1.6.0
 	github.com/praetorian-inc/fingerprintx v1.1.9
 	github.com/projectdiscovery/dsl v0.3.9
 	github.com/projectdiscovery/fasttemplate v0.0.2
 	github.com/projectdiscovery/go-smb2 v0.0.0-20240129202741-052cc450c6cb
 	github.com/projectdiscovery/goflags v0.1.65
-	github.com/projectdiscovery/gologger v1.1.38
+	github.com/projectdiscovery/gologger v1.1.46
 	github.com/projectdiscovery/gostruct v0.0.2
 	github.com/projectdiscovery/gozero v0.0.3
 	github.com/projectdiscovery/httpx v1.6.9
@@ -96,7 +95,7 @@ require (
 	github.com/projectdiscovery/tlsx v1.1.8
 	github.com/projectdiscovery/uncover v1.0.9
 	github.com/projectdiscovery/useragent v0.0.85
-	github.com/projectdiscovery/utils v0.4.4
+	github.com/projectdiscovery/utils v0.4.13
 	github.com/projectdiscovery/wappalyzergo v0.2.9
 	github.com/redis/go-redis/v9 v9.1.0
 	github.com/seh-msft/burpxml v1.0.1
@@ -162,8 +161,6 @@ require (
 	github.com/go-sourcemap/sourcemap v2.1.4+incompatible // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
-	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
-	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/google/certificate-transparency-go v1.1.4 // indirect
 	github.com/google/go-github/v30 v30.1.0 // indirect
 	github.com/google/pprof v0.0.0-20240227163752-401108e1b7e7 // indirect
@@ -286,7 +283,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/projectdiscovery/blackrock v0.0.1 // indirect
-	github.com/projectdiscovery/networkpolicy v0.0.9
+	github.com/projectdiscovery/networkpolicy v0.1.1
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d // indirect
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
