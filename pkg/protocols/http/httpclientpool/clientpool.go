@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"log"
 	"net"
 	"net/http"
 	"net/http/cookiejar"
@@ -182,6 +183,11 @@ func Get(options *types.Options, configuration *Configuration) (*retryablehttp.C
 
 // wrappedGet wraps a get operation without normal client check
 func wrappedGet(options *types.Options, configuration *Configuration) (*retryablehttp.Client, error) {
+	defer func() {
+		if rc := recover(); rc != nil {
+			log.Println("Recovered in wrappedGet", rc)
+		}
+	}()
 	var err error
 
 	hash := configuration.Hash()
