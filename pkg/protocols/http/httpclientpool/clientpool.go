@@ -270,6 +270,11 @@ func wrappedGet(options *types.Options, configuration *Configuration) (*retryabl
 		ForceAttemptHTTP2: options.ForceAttemptHTTP2,
 		DialContext:       protocolstate.GetDialer().Dial,
 		DialTLSContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+			defer func() {
+				if rc := recover(); rc != nil {
+					log.Println("Recovered in DialTLSContext", rc)
+				}
+			}()
 			if options.TlsImpersonate {
 				return protocolstate.Dialer.DialTLSWithConfigImpersonate(ctx, network, addr, tlsConfig, impersonate.Random, nil)
 			}
