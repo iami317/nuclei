@@ -222,9 +222,9 @@ func Close() {
 	muDialer.Lock()
 	defer muDialer.Unlock()
 
-	if Dialer != nil {
-		Dialer.Close()
-		Dialer = nil
-	}
+	//if Dialer != nil {
+	//	Dialer.Close()
+	//	Dialer = nil
+	//}
 	StopActiveMemGuardian()
 }
