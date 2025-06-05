@@ -243,6 +243,10 @@ func (store *Store) Templates() []*templates.Template {
 	return store.templates
 }
 
+func (store *Store) ClearTemplates() {
+	store.templates = nil
+}
+
 // Workflows returns all the workflows in the store
 func (store *Store) Workflows() []*templates.Template {
 	return store.workflows
