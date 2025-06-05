@@ -231,6 +231,7 @@ func (e *NucleiEngine) Close() {
 	e.closeInternal()
 	protocolinit.Close()
 	e.parser.Cache().Purge()
+	e.parser.CompiledCache().Purge()
 }
 
 // ExecuteCallbackWithCtx executes templates on targets and calls callback on each result(only if results are found)

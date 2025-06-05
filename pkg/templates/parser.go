@@ -38,6 +38,10 @@ func (p *Parser) Cache() *Cache {
 	return p.parsedTemplatesCache
 }
 
+func (p *Parser) CompiledCache() *Cache {
+	return p.compiledTemplatesCache
+}
+
 // LoadTemplate returns true if the template is valid and matches the filtering criteria.
 func (p *Parser) LoadTemplate(templatePath string, t any, extraTags []string, catalog catalog.Catalog) (bool, error) {
 	tagFilter, ok := t.(*TagFilter)
