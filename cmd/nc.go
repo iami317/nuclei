@@ -18,7 +18,7 @@ func main() {
 		//"http://123.57.72.20:8086",
 		//"http://101.132.171.40",
 		//"http://59.54.14.247:8082",
-		"http://192.168.101.60:61616",
+		"http://192.168.101.60:10909",
 	}
 
 	defer func() {
@@ -27,34 +27,31 @@ func main() {
 
 	//pocPath := []string{""}
 	//pocPath := []string{"/Users/meng/go/src/hzbas/bas-attack/cmd/.conf/poc_script/d3db572b-da11-4ac1-a3de-7f5641c50e13.yaml"}
-	pocPath := []string{"/Users/meng/go/src/hzbas/bas-attack/cmd/.conf/poc_script"}
+	pocPath := []string{"/Users/meng/go/src/hzbas/bas-attack/cmd/.conf/poc_script/9b06584d-aaac-499c-919a-aad8eb77cfe0.yaml"}
 	//pocPath := []string{"cmd/pocs"}
-	ne, err := ncx.NewThreadSafeNucleiEngineCtx(context.Background(), ncx.WithTemplatesOrWorkflows(ncx.TemplateSources{
-		Templates: pocPath,
-	}))
+	ne, err := ncx.NewNucleiEngineCtx(
+		context.Background(),
+		ncx.WithTemplatesOrWorkflows(ncx.TemplateSources{
+			Templates: pocPath,
+		}),
+		ncx.WithVerbosity(ncx.VerbosityOptions{
+			//Silent:  true,
+			Verbose: true,
+			Debug:   true,
+		}),
+	)
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer ne.Close()
-
-	//ne.Options().Timeout = 3
-	//ne.Options().Retries = 1
+	//ne.GetExecuterOptions().Options.Tags = []string{"epmd", "couchdb"}
 
 	writeCallback := func(event *output.ResultEvent) {
 		fmt.Println("*******", event.IP, event.Port, event.TemplateID, event.MatcherName)
 	}
-	ne.GlobalResultCallback(writeCallback)
-	err = ne.ExecuteNucleiWithOpts(
-		targetUrl,
-		func(e *ncx.NucleiEngine) error {
-			e.Options().Timeout = 1
-			e.Options().Retries = 1
-			e.Options().Verbose = true
-			e.Options().Tags = []string{"apachemq", "ActiveMQ"}
-			//e.Options().InteractshURL = "cutugsbadq724bs1mp0gyynq4tfzt9od6.interactsh.server"
-			return nil
-		},
-	)
+	ne.LoadTargets(targetUrl, false)
+	err = ne.ExecuteWithCallback(writeCallback)
+
 	if err != nil {
 		fmt.Println(err)
 	}
