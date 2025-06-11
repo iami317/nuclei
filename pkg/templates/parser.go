@@ -100,17 +100,17 @@ func (p *Parser) ParseTemplate(templatePath string, catalog catalog.Catalog) (an
 		}
 		defer reader.Close()
 
-		data, err := io.ReadAll(reader)
+		data, err = io.ReadAll(reader)
 		if err != nil {
 			return nil, err
 		}
+	}
 
-		// pre-process directives only for local files
-		if fileutil.FileExists(templatePath) && config.GetTemplateFormatFromExt(templatePath) == config.YAML {
-			data, err = yamlutil.PreProcess(data)
-			if err != nil {
-				return nil, err
-			}
+	// pre-process directives only for local files
+	if fileutil.FileExists(templatePath) && config.GetTemplateFormatFromExt(templatePath) == config.YAML {
+		data, err = yamlutil.PreProcess(data)
+		if err != nil {
+			return nil, err
 		}
 	}
 
