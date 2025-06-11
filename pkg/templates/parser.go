@@ -3,14 +3,14 @@ package templates
 import (
 	"encoding/json"
 	"fmt"
+	yamlutil "github.com/iami317/nuclei/v3/pkg/utils/yaml"
+	fileutil "github.com/projectdiscovery/utils/file"
 	"io"
 
 	"github.com/iami317/nuclei/v3/pkg/catalog"
 	"github.com/iami317/nuclei/v3/pkg/catalog/config"
 	"github.com/iami317/nuclei/v3/pkg/utils"
 	"github.com/iami317/nuclei/v3/pkg/utils/stats"
-	yamlutil "github.com/iami317/nuclei/v3/pkg/utils/yaml"
-	fileutil "github.com/projectdiscovery/utils/file"
 	"gopkg.in/yaml.v2"
 )
 
@@ -89,7 +89,6 @@ func (p *Parser) ParseTemplate(templatePath string, catalog catalog.Catalog) (an
 	if value != nil {
 		return value, err
 	}
-
 	var data []byte
 	if v, ok := p.CacheTemplates[templatePath]; ok {
 		data = v
@@ -104,6 +103,7 @@ func (p *Parser) ParseTemplate(templatePath string, catalog catalog.Catalog) (an
 		if err != nil {
 			return nil, err
 		}
+
 	}
 
 	// pre-process directives only for local files
