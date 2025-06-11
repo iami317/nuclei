@@ -15,6 +15,7 @@ import (
 )
 
 type Parser struct {
+	CacheTemplates map[string][]byte
 	ShouldValidate bool
 	NoStrictSyntax bool
 	// this cache can be copied safely between ephemeral instances
@@ -89,22 +90,27 @@ func (p *Parser) ParseTemplate(templatePath string, catalog catalog.Catalog) (an
 		return value, err
 	}
 
-	reader, err := utils.ReaderFromPathOrURL(templatePath, catalog)
-	if err != nil {
-		return nil, err
-	}
-	defer reader.Close()
-
-	data, err := io.ReadAll(reader)
-	if err != nil {
-		return nil, err
-	}
-
-	// pre-process directives only for local files
-	if fileutil.FileExists(templatePath) && config.GetTemplateFormatFromExt(templatePath) == config.YAML {
-		data, err = yamlutil.PreProcess(data)
+	var data []byte
+	if v, ok := p.CacheTemplates[templatePath]; ok {
+		data = v
+	} else {
+		reader, err := utils.ReaderFromPathOrURL(templatePath, catalog)
 		if err != nil {
 			return nil, err
+		}
+		defer reader.Close()
+
+		data, err := io.ReadAll(reader)
+		if err != nil {
+			return nil, err
+		}
+
+		// pre-process directives only for local files
+		if fileutil.FileExists(templatePath) && config.GetTemplateFormatFromExt(templatePath) == config.YAML {
+			data, err = yamlutil.PreProcess(data)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 

@@ -39,7 +39,7 @@ func createEphemeralObjects(ctx context.Context, base *NucleiEngine, opts *types
 		HostErrorsCache: base.hostErrCache,
 		Colorizer:       aurora.NewAurora(true),
 		ResumeCfg:       types.NewResumeCfg(),
-		Parser:          base.parser,
+		Parser:          base.Parser,
 		Browser:         base.browserInstance,
 	}
 	if opts.ShouldUseHostError() && base.hostErrCache != nil {

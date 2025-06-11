@@ -110,7 +110,7 @@ func (e *NucleiEngine) init(ctx context.Context) error {
 		return err
 	}
 
-	e.parser = templates.NewParser()
+	e.Parser = templates.NewParser()
 
 	if sharedInit == nil || protocolstate.ShouldInit() {
 		sharedInit = &sync.Once{}
@@ -171,7 +171,7 @@ func (e *NucleiEngine) init(ctx context.Context) error {
 		Colorizer:    aurora.NewAurora(true),
 		ResumeCfg:    types.NewResumeCfg(),
 		Browser:      e.browserInstance,
-		Parser:       e.parser,
+		Parser:       e.Parser,
 		InputHelper:  input.NewHelper(),
 	}
 	if e.opts.ShouldUseHostError() && e.hostErrCache != nil {

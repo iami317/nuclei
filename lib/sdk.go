@@ -74,7 +74,7 @@ type NucleiEngine struct {
 	mode             engineMode
 	browserInstance  *engine.Browser
 	httpClient       *retryablehttp.Client
-	parser           *templates.Parser
+	Parser           *templates.Parser
 	authprovider     authprovider.AuthProvider
 
 	// unexported meta options
@@ -230,8 +230,8 @@ func (e *NucleiEngine) closeInternal() {
 func (e *NucleiEngine) Close() {
 	e.closeInternal()
 	protocolinit.Close()
-	e.parser.Cache().Purge()
-	e.parser.CompiledCache().Purge()
+	e.Parser.Cache().Purge()
+	e.Parser.CompiledCache().Purge()
 	e.store.ClearTemplates()
 }
 
