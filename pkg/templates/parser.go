@@ -85,7 +85,7 @@ func (p *Parser) LoadTemplate(templatePath string, t any, extraTags []string, ca
 
 // ParseTemplate parses a template and returns a *templates.Template structure
 func (p *Parser) ParseTemplate(templatePath string, catalog catalog.Catalog) (any, error) {
-	fmt.Println("------------------------templatePath", templatePath)
+	//fmt.Println("------------------------templatePath", templatePath)
 	value, _, err := p.parsedTemplatesCache.Has(templatePath)
 	if value != nil {
 		return value, err
