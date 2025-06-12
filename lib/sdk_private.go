@@ -24,7 +24,6 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/protocolinit"
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/protocolstate"
 	"github.com/iami317/nuclei/v3/pkg/protocols/http/httpclientpool"
-	"github.com/iami317/nuclei/v3/pkg/reporting"
 	"github.com/iami317/nuclei/v3/pkg/templates"
 	"github.com/iami317/nuclei/v3/pkg/testutils"
 	"github.com/iami317/nuclei/v3/pkg/types"
@@ -140,14 +139,16 @@ func (e *NucleiEngine) init(ctx context.Context) error {
 		e.customProgress = progressInstance
 		e.interactshOpts.Progress = progressInstance
 	}
+	/*
+		if err := reporting.CreateConfigIfNotExists(); err != nil {
+			return err
+		}
+		// we don't support reporting config in sdk mode
+		if e.rc, err = reporting.New(&reporting.Options{}, "", false); err != nil {
+			return err
+		}
 
-	if err := reporting.CreateConfigIfNotExists(); err != nil {
-		return err
-	}
-	// we don't support reporting config in sdk mode
-	if e.rc, err = reporting.New(&reporting.Options{}, "", false); err != nil {
-		return err
-	}
+	*/
 	e.interactshOpts.IssuesClient = e.rc
 	if e.httpClient != nil {
 		e.interactshOpts.HTTPClient = e.httpClient
@@ -231,14 +232,17 @@ func (e *NucleiEngine) init(ctx context.Context) error {
 		e.httpxClient = nucleiUtils.GetInputLivenessChecker(client)
 	}
 
-	// Only Happens once regardless how many times this function is called
-	// This will update ignore file to filter out templates with weak matchers to avoid false positives
-	// and also upgrade templates to latest version if available
-	installer.NucleiSDKVersionCheck()
+	/*
+		// Only Happens once regardless how many times this function is called
+		// This will update ignore file to filter out templates with weak matchers to avoid false positives
+		// and also upgrade templates to latest version if available
+		installer.NucleiSDKVersionCheck()
 
-	if DefaultConfig.CanCheckForUpdates() {
-		return e.processUpdateCheckResults()
-	}
+		if DefaultConfig.CanCheckForUpdates() {
+			return e.processUpdateCheckResults()
+		}
+
+	*/
 	return nil
 }
 
