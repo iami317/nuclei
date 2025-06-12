@@ -33,7 +33,6 @@ func createEphemeralObjects(ctx context.Context, base *NucleiEngine, opts *types
 		Options:         opts,
 		Progress:        base.customProgress,
 		Catalog:         base.catalog,
-		IssuesClient:    base.rc,
 		RateLimiter:     base.rateLimiter,
 		Interactsh:      base.interactshClient,
 		HostErrorsCache: base.hostErrCache,
@@ -70,7 +69,6 @@ func closeEphemeralObjects(u *unsafeOptions) {
 	// dereference all objects that were inherited from base nuclei engine
 	// since these are meant to be closed globally by base nuclei engine
 	u.executerOpts.Output = nil
-	u.executerOpts.IssuesClient = nil
 	u.executerOpts.Interactsh = nil
 	u.executerOpts.HostErrorsCache = nil
 	u.executerOpts.Progress = nil

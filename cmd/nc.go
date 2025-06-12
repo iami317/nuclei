@@ -14,6 +14,7 @@ import (
 // /Users/meng/nuclei-templates/http/cves/2024/CVE-2024-36401.yaml
 
 func main() {
+	fmt.Println()
 	targetUrl := []string{
 		"http://192.168.101.60:10909",
 	}
@@ -44,8 +45,8 @@ func main() {
 			Templates: pocPath,
 		}),
 		ncx.WithVerbosity(ncx.VerbosityOptions{
-			Verbose: true,
-			Debug:   true,
+			Verbose: false,
+			Debug:   false,
 		}),
 	)
 	ne.Parser.CacheTemplates = c

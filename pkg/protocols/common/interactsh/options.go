@@ -6,7 +6,6 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/fuzz/frequency"
 	"github.com/iami317/nuclei/v3/pkg/output"
 	"github.com/iami317/nuclei/v3/pkg/progress"
-	"github.com/iami317/nuclei/v3/pkg/reporting"
 	"github.com/projectdiscovery/interactsh/pkg/client"
 	"github.com/projectdiscovery/retryablehttp-go"
 )
@@ -30,8 +29,6 @@ type Options struct {
 	PollDuration time.Duration
 	// Output is the output writer for nuclei
 	Output output.Writer
-	// IssuesClient is a client for issue exporting
-	IssuesClient reporting.Client
 	// Progress is the nuclei progress bar implementation.
 	Progress progress.Progress
 	// Debug specifies whether debugging output should be shown for interactsh-client
@@ -53,7 +50,7 @@ type Options struct {
 }
 
 // DefaultOptions returns the default options for interactsh client
-func DefaultOptions(output output.Writer, reporting reporting.Client, progress progress.Progress) *Options {
+func DefaultOptions(output output.Writer, progress progress.Progress) *Options {
 	return &Options{
 		ServerURL:           client.DefaultOptions.ServerURL,
 		CacheSize:           5000,
@@ -61,7 +58,6 @@ func DefaultOptions(output output.Writer, reporting reporting.Client, progress p
 		CooldownPeriod:      5 * time.Second,
 		PollDuration:        5 * time.Second,
 		Output:              output,
-		IssuesClient:        reporting,
 		Progress:            progress,
 		DisableHttpFallback: true,
 		NoColor:             false,

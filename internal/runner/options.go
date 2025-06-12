@@ -16,14 +16,8 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/protocolinit"
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/utils/vardump"
 	"github.com/iami317/nuclei/v3/pkg/protocols/headless/engine"
-	"github.com/iami317/nuclei/v3/pkg/reporting"
-	"github.com/iami317/nuclei/v3/pkg/reporting/exporters/jsonexporter"
-	"github.com/iami317/nuclei/v3/pkg/reporting/exporters/jsonl"
-	"github.com/iami317/nuclei/v3/pkg/reporting/exporters/markdown"
-	"github.com/iami317/nuclei/v3/pkg/reporting/exporters/sarif"
 	"github.com/iami317/nuclei/v3/pkg/templates/extensions"
 	"github.com/iami317/nuclei/v3/pkg/types"
-	"github.com/iami317/nuclei/v3/pkg/utils/yaml"
 	"github.com/projectdiscovery/goflags"
 	"github.com/projectdiscovery/gologger"
 	"github.com/projectdiscovery/gologger/formatter"
@@ -177,29 +171,6 @@ func ValidateOptions(options *types.Options) error {
 		}
 		validateCertificatePaths(options.ClientCertFile, options.ClientKeyFile, options.ClientCAFile)
 	}
-	// Verify AWS secrets are passed if a S3 template bucket is passed
-	//if options.AwsBucketName != "" && options.UpdateTemplates && !options.AwsTemplateDisableDownload {
-	//	missing := validateMissingS3Options(options)
-	//	if missing != nil {
-	//		return fmt.Errorf("aws s3 bucket details are missing. Please provide %s", strings.Join(missing, ","))
-	//	}
-	//}
-
-	// Verify Azure connection configuration is passed if the Azure template bucket is passed
-	//if options.AzureContainerName != "" && options.UpdateTemplates && !options.AzureTemplateDisableDownload {
-	//	missing := validateMissingAzureOptions(options)
-	//	if missing != nil {
-	//		return fmt.Errorf("azure connection details are missing. Please provide %s", strings.Join(missing, ","))
-	//	}
-	//}
-
-	// Verify that all GitLab options are provided if the GitLab server or token is provided
-	//if len(options.GitLabTemplateRepositoryIDs) != 0 && options.UpdateTemplates && !options.GitLabTemplateDisableDownload {
-	//	missing := validateMissingGitLabOptions(options)
-	//	if missing != nil {
-	//		return fmt.Errorf("gitlab server details are missing. Please provide %s", strings.Join(missing, ","))
-	//	}
-	//}
 
 	// verify that a valid ip version type was selected (4, 6)
 	if len(options.IPVersion) == 0 {
@@ -221,103 +192,6 @@ func ValidateOptions(options *types.Options) error {
 		return errors.New("ipv4 and/or ipv6 must be selected")
 	}
 	return nil
-}
-
-//func validateMissingS3Options(options *types.Options) []string {
-//	var missing []string
-//	if options.AwsBucketName == "" {
-//		missing = append(missing, "AWS_TEMPLATE_BUCKET")
-//	}
-//	if options.AwsAccessKey == "" {
-//		missing = append(missing, "AWS_ACCESS_KEY")
-//	}
-//	if options.AwsSecretKey == "" {
-//		missing = append(missing, "AWS_SECRET_KEY")
-//	}
-//	if options.AwsRegion == "" {
-//		missing = append(missing, "AWS_REGION")
-//	}
-//	return missing
-//}
-
-//func validateMissingAzureOptions(options *types.Options) []string {
-//	var missing []string
-//	if options.AzureTenantID == "" {
-//		missing = append(missing, "AZURE_TENANT_ID")
-//	}
-//	if options.AzureClientID == "" {
-//		missing = append(missing, "AZURE_CLIENT_ID")
-//	}
-//	if options.AzureClientSecret == "" {
-//		missing = append(missing, "AZURE_CLIENT_SECRET")
-//	}
-//	if options.AzureServiceURL == "" {
-//		missing = append(missing, "AZURE_SERVICE_URL")
-//	}
-//	if options.AzureContainerName == "" {
-//		missing = append(missing, "AZURE_CONTAINER_NAME")
-//	}
-//	return missing
-//}
-
-//func validateMissingGitLabOptions(options *types.Options) []string {
-//	var missing []string
-//	if options.GitLabToken == "" {
-//		missing = append(missing, "GITLAB_TOKEN")
-//	}
-//	if len(options.GitLabTemplateRepositoryIDs) == 0 {
-//		missing = append(missing, "GITLAB_REPOSITORY_IDS")
-//	}
-//
-//	return missing
-//}
-
-func createReportingOptions(options *types.Options) (*reporting.Options, error) {
-	var reportingOptions = &reporting.Options{}
-	if options.ReportingConfig != "" {
-		file, err := os.Open(options.ReportingConfig)
-		if err != nil {
-			return nil, errors.Wrap(err, "could not open reporting config file")
-		}
-		defer file.Close()
-
-		if err := yaml.DecodeAndValidate(file, reportingOptions); err != nil {
-			return nil, errors.Wrap(err, "could not parse reporting config file")
-		}
-		Walk(reportingOptions, expandEndVars)
-	}
-	if options.MarkdownExportDirectory != "" {
-		reportingOptions.MarkdownExporter = &markdown.Options{
-			Directory: options.MarkdownExportDirectory,
-			OmitRaw:   options.OmitRawRequests,
-			SortMode:  options.MarkdownExportSortMode,
-		}
-	}
-	if options.SarifExport != "" {
-		reportingOptions.SarifExporter = &sarif.Options{File: options.SarifExport}
-	}
-	if options.JSONExport != "" {
-		reportingOptions.JSONExporter = &jsonexporter.Options{
-			File:    options.JSONExport,
-			OmitRaw: options.OmitRawRequests,
-		}
-	}
-	// Combine options.
-	if options.JSONLExport != "" {
-		// Combine the CLI options with the config file options with the CLI options taking precedence
-		if reportingOptions.JSONLExporter != nil {
-			reportingOptions.JSONLExporter.File = options.JSONLExport
-			reportingOptions.JSONLExporter.OmitRaw = options.OmitRawRequests
-		} else {
-			reportingOptions.JSONLExporter = &jsonl.Options{
-				File:    options.JSONLExport,
-				OmitRaw: options.OmitRawRequests,
-			}
-		}
-	}
-
-	reportingOptions.OmitRaw = options.OmitRawRequests
-	return reportingOptions, nil
 }
 
 // configureOutput configures the output logging levels to be displayed on the screen

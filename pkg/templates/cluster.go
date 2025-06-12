@@ -269,7 +269,7 @@ func (e *ClusterExecuter) Execute(ctx *scan.ScanContext) (bool, error) {
 				clonedEvent.Results = e.requests.MakeResultEvent(clonedEvent)
 				results = true
 
-				_ = writer.WriteResult(clonedEvent, e.options.Output, e.options.Progress, e.options.IssuesClient)
+				_ = writer.WriteResult(clonedEvent, e.options.Output, e.options.Progress)
 			}
 		}
 	})

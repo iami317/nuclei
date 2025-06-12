@@ -56,7 +56,6 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/protocols/headless/engine"
 	httpProtocol "github.com/iami317/nuclei/v3/pkg/protocols/http"
 	"github.com/iami317/nuclei/v3/pkg/protocols/http/httpclientpool"
-	"github.com/iami317/nuclei/v3/pkg/reporting"
 	"github.com/iami317/nuclei/v3/pkg/templates"
 	"github.com/iami317/nuclei/v3/pkg/types"
 	"github.com/iami317/nuclei/v3/pkg/utils"
@@ -83,7 +82,6 @@ type Runner struct {
 	catalog            catalog.Catalog
 	progress           progress.Progress
 	colorizer          aurora.Aurora
-	issuesClient       reporting.Client
 	browser            *engine.Browser
 	rateLimiter        *ratelimit.Limiter
 	hostErrors         hosterrorscache.CacheInterface
@@ -190,25 +188,6 @@ func New(options *types.Options) (*Runner, error) {
 		}
 	}
 
-	if err := reporting.CreateConfigIfNotExists(); err != nil {
-		return nil, err
-	}
-	reportingOptions, err := createReportingOptions(options)
-	if err != nil {
-		return nil, err
-	}
-	if reportingOptions != nil && httpclient != nil {
-		reportingOptions.HttpClient = httpclient
-	}
-
-	if reportingOptions != nil {
-		client, err := reporting.New(reportingOptions, options.ReportingDB, false)
-		if err != nil {
-			return nil, errors.Wrap(err, "could not create issue reporting client")
-		}
-		runner.issuesClient = client
-	}
-
 	// output coloring
 	useColor := !options.NoColor
 	runner.colorizer = aurora.NewAurora(useColor)
@@ -296,7 +275,7 @@ func New(options *types.Options) (*Runner, error) {
 	}
 	runner.resumeCfg = resumeCfg
 
-	opts := interactsh.DefaultOptions(runner.output, runner.issuesClient, runner.progress)
+	opts := interactsh.DefaultOptions(runner.output, runner.progress)
 	opts.Debug = runner.options.Debug
 	opts.NoColor = runner.options.NoColor
 	if options.InteractshURL != "" {
@@ -368,9 +347,6 @@ func (r *Runner) Close() {
 	}
 	if r.output != nil {
 		r.output.Close()
-	}
-	if r.issuesClient != nil {
-		r.issuesClient.Close()
 	}
 	if r.projectFile != nil {
 		r.projectFile.Close()
@@ -467,7 +443,6 @@ func (r *Runner) RunEnumeration() error {
 		Options:             r.options,
 		Progress:            r.progress,
 		Catalog:             r.catalog,
-		IssuesClient:        r.issuesClient,
 		RateLimiter:         r.rateLimiter,
 		Interactsh:          r.interactsh,
 		ProjectFile:         r.projectFile,

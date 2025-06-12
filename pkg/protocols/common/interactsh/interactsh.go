@@ -213,7 +213,7 @@ func (c *Client) processInteractionForRequest(interaction *server.Interaction, d
 	}
 
 	// if event is not already matched, write it to output
-	if !data.Event.InteractshMatched.Load() && writer.WriteResult(data.Event, c.options.Output, c.options.Progress, c.options.IssuesClient) {
+	if !data.Event.InteractshMatched.Load() && writer.WriteResult(data.Event, c.options.Output, c.options.Progress) {
 		data.Event.InteractshMatched.Store(true)
 		c.matched.Store(true)
 		if requestShouldStopAtFirstMatch(data) || c.options.StopAtFirstMatch {

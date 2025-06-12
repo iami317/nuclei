@@ -20,7 +20,6 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/interactsh"
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/protocolinit"
 	"github.com/iami317/nuclei/v3/pkg/protocols/headless/engine"
-	"github.com/iami317/nuclei/v3/pkg/reporting"
 	"github.com/iami317/nuclei/v3/pkg/templates"
 	"github.com/iami317/nuclei/v3/pkg/templates/signer"
 	"github.com/iami317/nuclei/v3/pkg/types"
@@ -83,7 +82,6 @@ type NucleiEngine struct {
 	hostErrCache   *hosterrorscache.Cache
 	customWriter   output.Writer
 	customProgress progress.Progress
-	rc             reporting.Client
 	executerOpts   protocols.ExecutorOptions
 }
 
@@ -197,9 +195,7 @@ func (e *NucleiEngine) closeInternal() {
 	if e.interactshClient != nil {
 		e.interactshClient.Close()
 	}
-	if e.rc != nil {
-		e.rc.Close()
-	}
+
 	if e.customWriter != nil {
 		e.customWriter.Close()
 	}

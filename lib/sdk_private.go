@@ -80,7 +80,7 @@ func (e *NucleiEngine) applyRequiredDefaults(ctx context.Context) {
 		e.interactshOpts.Output = e.customWriter
 		e.interactshOpts.Progress = e.customProgress
 	} else {
-		e.interactshOpts = interactsh.DefaultOptions(e.customWriter, e.rc, e.customProgress)
+		e.interactshOpts = interactsh.DefaultOptions(e.customWriter, e.customProgress)
 	}
 	if e.rateLimiter == nil {
 		e.rateLimiter = ratelimit.New(ctx, 150, time.Second)
@@ -139,17 +139,7 @@ func (e *NucleiEngine) init(ctx context.Context) error {
 		e.customProgress = progressInstance
 		e.interactshOpts.Progress = progressInstance
 	}
-	/*
-		if err := reporting.CreateConfigIfNotExists(); err != nil {
-			return err
-		}
-		// we don't support reporting config in sdk mode
-		if e.rc, err = reporting.New(&reporting.Options{}, "", false); err != nil {
-			return err
-		}
 
-	*/
-	e.interactshOpts.IssuesClient = e.rc
 	if e.httpClient != nil {
 		e.interactshOpts.HTTPClient = e.httpClient
 	}
@@ -162,18 +152,17 @@ func (e *NucleiEngine) init(ctx context.Context) error {
 	}
 
 	e.executerOpts = protocols.ExecutorOptions{
-		Output:       e.customWriter,
-		Options:      e.opts,
-		Progress:     e.customProgress,
-		Catalog:      e.catalog,
-		IssuesClient: e.rc,
-		RateLimiter:  e.rateLimiter,
-		Interactsh:   e.interactshClient,
-		Colorizer:    aurora.NewAurora(true),
-		ResumeCfg:    types.NewResumeCfg(),
-		Browser:      e.browserInstance,
-		Parser:       e.Parser,
-		InputHelper:  input.NewHelper(),
+		Output:      e.customWriter,
+		Options:     e.opts,
+		Progress:    e.customProgress,
+		Catalog:     e.catalog,
+		RateLimiter: e.rateLimiter,
+		Interactsh:  e.interactshClient,
+		Colorizer:   aurora.NewAurora(true),
+		ResumeCfg:   types.NewResumeCfg(),
+		Browser:     e.browserInstance,
+		Parser:      e.Parser,
+		InputHelper: input.NewHelper(),
 	}
 	if e.opts.ShouldUseHostError() && e.hostErrCache != nil {
 		e.executerOpts.HostErrorsCache = e.hostErrCache

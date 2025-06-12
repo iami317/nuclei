@@ -295,7 +295,7 @@ func (s *Service) getTagsUsingDetectionTemplates(input *contextargs.MetaInput) (
 					_ = counter.Add(1)
 
 					// TBD: should we show or hide tech detection results? what about matcher-status flag?
-					_ = writer.WriteResult(event, s.opts.Output, s.opts.Progress, s.opts.IssuesClient)
+					_ = writer.WriteResult(event, s.opts.Output, s.opts.Progress)
 				}
 			}
 

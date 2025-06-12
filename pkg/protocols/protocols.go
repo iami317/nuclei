@@ -31,7 +31,6 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/utils/excludematchers"
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/variables"
 	"github.com/iami317/nuclei/v3/pkg/protocols/headless/engine"
-	"github.com/iami317/nuclei/v3/pkg/reporting"
 	"github.com/iami317/nuclei/v3/pkg/scan"
 	templateTypes "github.com/iami317/nuclei/v3/pkg/templates/types"
 	"github.com/iami317/nuclei/v3/pkg/types"
@@ -70,8 +69,6 @@ type ExecutorOptions struct {
 	Output output.Writer
 	// Options contains configuration options for the executer.
 	Options *types.Options
-	// IssuesClient is a client for nuclei issue tracker reporting
-	IssuesClient reporting.Client
 	// Progress is a progress client for scan reporting
 	Progress progress.Progress
 	// RateLimiter is a rate-limiter for limiting sent number of requests.

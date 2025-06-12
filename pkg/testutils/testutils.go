@@ -96,7 +96,6 @@ func NewMockExecuterOptions(options *types.Options, info *TemplateInfo) *protoco
 		Options:      options,
 		Progress:     progressImpl,
 		ProjectFile:  nil,
-		IssuesClient: nil,
 		Browser:      nil,
 		Catalog:      disk.NewCatalog(config.DefaultConfig.TemplatesDirectory),
 		RateLimiter:  ratelimit.New(context.Background(), uint(options.RateLimit), time.Second),
