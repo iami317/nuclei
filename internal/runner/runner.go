@@ -426,12 +426,6 @@ func (r *Runner) RunEnumeration() error {
 			r.options.Templates = append(r.options.Templates, arr...)
 		}
 	}
-	// Exclude ignored file for validation
-	if !r.options.Validate {
-		ignoreFile := config.ReadIgnoreFile()
-		r.options.ExcludeTags = append(r.options.ExcludeTags, ignoreFile.Tags...)
-		r.options.ExcludedTemplates = append(r.options.ExcludedTemplates, ignoreFile.Files...)
-	}
 
 	fuzzFreqCache := frequency.New(frequency.DefaultMaxTrackCount, r.options.FuzzParamFrequency)
 	r.fuzzFrequencyCache = fuzzFreqCache
