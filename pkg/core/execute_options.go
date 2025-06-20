@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"github.com/projectdiscovery/gologger"
 	"sync"
 	"sync/atomic"
 
@@ -11,7 +12,6 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/templates"
 	"github.com/iami317/nuclei/v3/pkg/templates/types"
 	"github.com/iami317/nuclei/v3/pkg/types/scanstrategy"
-	"github.com/projectdiscovery/gologger"
 	stringsutil "github.com/projectdiscovery/utils/strings"
 	syncutil "github.com/projectdiscovery/utils/sync"
 )
@@ -50,7 +50,7 @@ func (e *Engine) ExecuteScanWithOpts(ctx context.Context, templatesList []*templ
 	totalReqAfterClustering := getRequestCount(finalTemplates) * int(target.Count())
 
 	if !noCluster && totalReqAfterClustering < totalReqBeforeCluster {
-		gologger.Info().Msgf("Templates clustered: %d (Reduced %d Requests)", clusterCount, totalReqBeforeCluster-totalReqAfterClustering)
+		gologger.Verbose().Msgf("Templates clustered: %d (Reduced %d Requests)", clusterCount, totalReqBeforeCluster-totalReqAfterClustering)
 	}
 
 	// 0 matches means no templates were found in the directory
