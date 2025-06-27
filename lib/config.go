@@ -314,9 +314,9 @@ func WithNetworkConfig(opts NetworkConfig) NucleiSDKOptions {
 // WithProxy allows setting proxy options
 func WithProxy(proxy []string, proxyInternalRequests bool) NucleiSDKOptions {
 	return func(e *NucleiEngine) error {
-		if e.mode == threadSafe {
-			return ErrOptionsNotSupported.Msgf("WithProxy")
-		}
+		//if e.mode == threadSafe {
+		//	return ErrOptionsNotSupported.Msgf("WithProxy")
+		//}
 		e.opts.Proxy = proxy
 		e.opts.ProxyInternal = proxyInternalRequests
 		return nil
