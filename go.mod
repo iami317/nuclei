@@ -4,7 +4,6 @@ go 1.21.0
 
 require (
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible
-	github.com/andygrunwald/go-jira v1.16.0
 	github.com/antchfx/htmlquery v1.3.0
 	github.com/bluele/gcache v0.0.2
 	github.com/go-playground/validator/v10 v10.14.1
@@ -33,7 +32,7 @@ require (
 	github.com/shirou/gopsutil/v3 v3.24.2 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/spf13/cast v1.5.1
-	github.com/syndtr/goleveldb v1.0.0
+	github.com/syndtr/goleveldb v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2
 	github.com/weppos/publicsuffix-go v0.30.2
 	github.com/xanzy/go-gitlab v0.107.0
@@ -45,7 +44,6 @@ require (
 )
 
 require (
-	code.gitea.io/sdk/gitea v0.17.0
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.6.0
 	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.1.0
 	github.com/DataDog/gostackparse v0.6.0
@@ -79,6 +77,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/mholt/archiver v3.1.1+incompatible
+	github.com/nsqio/go-nsq v1.1.0
 	github.com/praetorian-inc/fingerprintx v1.1.9
 	github.com/projectdiscovery/dsl v0.3.9
 	github.com/projectdiscovery/fasttemplate v0.0.2
@@ -91,7 +90,6 @@ require (
 	github.com/projectdiscovery/mapcidr v1.1.34
 	github.com/projectdiscovery/ratelimit v0.0.67
 	github.com/projectdiscovery/rdap v0.9.1-0.20221108103045-9865884d1917
-	github.com/projectdiscovery/sarif v0.0.1
 	github.com/projectdiscovery/tlsx v1.1.8
 	github.com/projectdiscovery/uncover v1.0.9
 	github.com/projectdiscovery/useragent v0.0.85
@@ -99,11 +97,9 @@ require (
 	github.com/projectdiscovery/wappalyzergo v0.2.9
 	github.com/redis/go-redis/v9 v9.1.0
 	github.com/seh-msft/burpxml v1.0.1
-	github.com/shurcooL/graphql v0.0.0-20230722043721-ed46e5a46466
 	github.com/stretchr/testify v1.10.0
 	github.com/yassinebenaid/godump v0.10.0
 	github.com/zmap/zgrab2 v0.1.8-0.20230806160807-97ba87c0e706
-	go.mongodb.org/mongo-driver v1.17.0
 	golang.org/x/term v0.27.0
 	gopkg.in/yaml.v3 v3.0.1
 	moul.io/http2curl v1.0.0
@@ -141,7 +137,6 @@ require (
 	github.com/cloudflare/circl v1.3.8 // indirect
 	github.com/containerd/continuity v0.4.2 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
-	github.com/davidmz/go-pageant v1.0.2 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dlclark/regexp2 v1.11.4 // indirect
 	github.com/docker/cli v24.0.5+incompatible // indirect
@@ -155,7 +150,6 @@ require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.9.1 // indirect
 	github.com/go-asn1-ber/asn1-ber v1.5.4 // indirect
-	github.com/go-fed/httpsig v1.1.0 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
 	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/go-sourcemap/sourcemap v2.1.4+incompatible // indirect
@@ -188,7 +182,6 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/moby/term v0.5.0 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
-	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.15.3-0.20240618155329-98d742f6907a // indirect
 	github.com/opencontainers/runc v1.1.14 // indirect
@@ -206,7 +199,7 @@ require (
 	github.com/refraction-networking/utls v1.6.7 // indirect
 	github.com/sashabaranov/go-openai v1.15.3 // indirect
 	github.com/shirou/gopsutil v3.21.11+incompatible // indirect
-	github.com/shoenig/go-m1cpu v0.1.6 // indirect
+	github.com/shoenig/go-m1cpu v0.1.7 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/skeema/knownhosts v1.2.1 // indirect
 	github.com/tidwall/btree v1.7.0 // indirect
@@ -221,10 +214,6 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/wk8/go-ordered-map/v2 v2.1.8 // indirect
-	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
-	github.com/xdg-go/scram v1.1.2 // indirect
-	github.com/xdg-go/stringprep v1.0.4 // indirect
-	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78 // indirect
 	github.com/ysmood/fetchup v0.2.3 // indirect
 	github.com/ysmood/got v0.34.1 // indirect
 	github.com/yuin/goldmark v1.7.4 // indirect
@@ -259,11 +248,10 @@ require (
 	github.com/goburrow/cache v0.1.4 // indirect
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
-	github.com/golang-jwt/jwt/v4 v4.5.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
-	github.com/google/uuid v1.6.0
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.7 // indirect
@@ -288,7 +276,6 @@ require (
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d // indirect
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
-	github.com/trivago/tgo v1.0.7
 	github.com/ulikunitz/xz v0.5.12 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/ysmood/goob v0.4.0 // indirect
