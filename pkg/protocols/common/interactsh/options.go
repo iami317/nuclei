@@ -3,10 +3,10 @@ package interactsh
 import (
 	"time"
 
+	"github.com/iami317/interactsh/pkg/client"
 	"github.com/iami317/nuclei/v3/pkg/fuzz/frequency"
 	"github.com/iami317/nuclei/v3/pkg/output"
 	"github.com/iami317/nuclei/v3/pkg/progress"
-	"github.com/projectdiscovery/interactsh/pkg/client"
 	"github.com/projectdiscovery/retryablehttp-go"
 )
 

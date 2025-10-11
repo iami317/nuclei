@@ -17,6 +17,7 @@ import (
 	_ "github.com/projectdiscovery/utils/pprof"
 	stringsutil "github.com/projectdiscovery/utils/strings"
 
+	"github.com/iami317/interactsh/pkg/client"
 	"github.com/iami317/nuclei/v3/internal/runner"
 	"github.com/iami317/nuclei/v3/pkg/catalog/config"
 	"github.com/iami317/nuclei/v3/pkg/input/provider"
@@ -34,7 +35,6 @@ import (
 	"github.com/projectdiscovery/goflags"
 	"github.com/projectdiscovery/gologger"
 	"github.com/projectdiscovery/gologger/levels"
-	"github.com/projectdiscovery/interactsh/pkg/client"
 	errorutil "github.com/projectdiscovery/utils/errors"
 	fileutil "github.com/projectdiscovery/utils/file"
 	unitutils "github.com/projectdiscovery/utils/unit"

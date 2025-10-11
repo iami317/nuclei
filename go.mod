@@ -21,7 +21,7 @@ require (
 	github.com/projectdiscovery/clistats v0.1.1
 	github.com/projectdiscovery/fastdialer v0.3.0
 	github.com/projectdiscovery/hmap v0.0.82
-	github.com/projectdiscovery/interactsh v1.2.2
+	github.com/projectdiscovery/interactsh v1.2.2 // indirect
 	github.com/projectdiscovery/rawhttp v0.1.80
 	github.com/projectdiscovery/retryabledns v1.0.94
 	github.com/projectdiscovery/retryablehttp-go v1.0.103
@@ -69,6 +69,7 @@ require (
 	github.com/go-pg/pg v8.0.7+incompatible
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/h2non/filetype v1.1.3
+	github.com/iami317/interactsh v0.0.0-20251011093755-984254c1f1be
 	github.com/iami317/n3iwf v0.0.0-20241009033059-2cd4efc866c8
 	github.com/invopop/yaml v0.3.1
 	github.com/kitabisa/go-ci v1.0.3
@@ -77,12 +78,11 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/mholt/archiver v3.1.1+incompatible
-	github.com/nsqio/go-nsq v1.1.0
 	github.com/praetorian-inc/fingerprintx v1.1.9
 	github.com/projectdiscovery/dsl v0.3.9
 	github.com/projectdiscovery/fasttemplate v0.0.2
 	github.com/projectdiscovery/go-smb2 v0.0.0-20240129202741-052cc450c6cb
-	github.com/projectdiscovery/goflags v0.1.65
+	github.com/projectdiscovery/goflags v0.1.74
 	github.com/projectdiscovery/gologger v1.1.46
 	github.com/projectdiscovery/gostruct v0.0.2
 	github.com/projectdiscovery/gozero v0.0.3

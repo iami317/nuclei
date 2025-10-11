@@ -2,6 +2,7 @@ package interactsh
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"regexp"
@@ -14,13 +15,13 @@ import (
 
 	"github.com/Mzack9999/gcache"
 
+	"github.com/iami317/interactsh/pkg/client"
+	"github.com/iami317/interactsh/pkg/server"
 	"github.com/iami317/nuclei/v3/pkg/operators"
 	"github.com/iami317/nuclei/v3/pkg/output"
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/helpers/responsehighlighter"
 	"github.com/iami317/nuclei/v3/pkg/protocols/common/helpers/writer"
 	"github.com/projectdiscovery/gologger"
-	"github.com/projectdiscovery/interactsh/pkg/client"
-	"github.com/projectdiscovery/interactsh/pkg/server"
 	"github.com/projectdiscovery/retryablehttp-go"
 	errorutil "github.com/projectdiscovery/utils/errors"
 	stringsutil "github.com/projectdiscovery/utils/strings"
@@ -61,7 +62,8 @@ func New(options *Options) (*Client, error) {
 	interactionsCache := gcache.New[string, []*server.Interaction](defaultMaxInteractionsCount).LRU().Build()
 	matchedTemplateCache := gcache.New[string, bool](defaultMaxInteractionsCount).LRU().Build()
 	interactshURLCache := gcache.New[string, string](defaultMaxInteractionsCount).LRU().Build()
-
+	bb, _ := json.Marshal(options)
+	fmt.Println(string(bb))
 	interactClient := &Client{
 		eviction:         options.Eviction,
 		interactions:     interactionsCache,
@@ -90,15 +92,12 @@ func (c *Client) poll() error {
 	if err != nil {
 		return errorutil.NewWithErr(err).Msgf("could not create client")
 	}
-
 	c.interactsh = interactsh
 
 	interactURL := interactsh.URL()
 	interactDomain := interactURL[strings.Index(interactURL, ".")+1:]
-	gologger.Verbose().Msgf("Using Interactsh Server: %s", interactDomain)
-
+	gologger.Info().Msgf("Using Interactsh Server: %s", interactDomain)
 	c.setHostname(interactDomain)
-
 	err = interactsh.StartPolling(c.pollDuration, func(interaction *server.Interaction) {
 		request, err := c.requests.Get(interaction.UniqueID)
 		// for more context in github actions
@@ -123,7 +122,6 @@ func (c *Client) poll() error {
 				return
 			}
 		}
-
 		_ = c.processInteractionForRequest(interaction, request)
 	})
 

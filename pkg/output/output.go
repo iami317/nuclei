@@ -20,6 +20,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"github.com/logrusorgru/aurora"
 
+	"github.com/iami317/interactsh/pkg/server"
 	"github.com/iami317/nuclei/v3/internal/colorizer"
 	"github.com/iami317/nuclei/v3/pkg/catalog/config"
 	"github.com/iami317/nuclei/v3/pkg/model"
@@ -30,7 +31,6 @@ import (
 	"github.com/iami317/nuclei/v3/pkg/types/nucleierr"
 	"github.com/iami317/nuclei/v3/pkg/utils"
 	"github.com/projectdiscovery/gologger"
-	"github.com/projectdiscovery/interactsh/pkg/server"
 	"github.com/projectdiscovery/utils/errkit"
 	fileutil "github.com/projectdiscovery/utils/file"
 	osutils "github.com/projectdiscovery/utils/os"
