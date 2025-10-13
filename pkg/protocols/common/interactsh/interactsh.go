@@ -2,7 +2,6 @@ package interactsh
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"os"
 	"regexp"
@@ -62,8 +61,6 @@ func New(options *Options) (*Client, error) {
 	interactionsCache := gcache.New[string, []*server.Interaction](defaultMaxInteractionsCount).LRU().Build()
 	matchedTemplateCache := gcache.New[string, bool](defaultMaxInteractionsCount).LRU().Build()
 	interactshURLCache := gcache.New[string, string](defaultMaxInteractionsCount).LRU().Build()
-	bb, _ := json.Marshal(options)
-	fmt.Println(string(bb))
 	interactClient := &Client{
 		eviction:         options.Eviction,
 		interactions:     interactionsCache,

@@ -69,7 +69,7 @@ require (
 	github.com/go-pg/pg v8.0.7+incompatible
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/h2non/filetype v1.1.3
-	github.com/iami317/interactsh v0.0.0-20251011093755-984254c1f1be
+	github.com/iami317/interactsh v0.0.0-20251013033924-a46b145a78b5
 	github.com/iami317/n3iwf v0.0.0-20241009033059-2cd4efc866c8
 	github.com/invopop/yaml v0.3.1
 	github.com/kitabisa/go-ci v1.0.3

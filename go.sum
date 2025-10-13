@@ -563,6 +563,8 @@ github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpO
 github.com/hudl/fargo v1.3.0/go.mod h1:y3CKSmjA+wD2gak7sUSXTAoopbhU08POFhmITJgmKTg=
 github.com/iami317/interactsh v0.0.0-20251011093755-984254c1f1be h1:eYA5AVdaD0ycbhHGuVX8FXaRrciHiXGuxk0NB+/EbJU=
 github.com/iami317/interactsh v0.0.0-20251011093755-984254c1f1be/go.mod h1:m8YdIuVORx30C7TnPZu/FTdxbs+G1nu07CyHCQMndpE=
+github.com/iami317/interactsh v0.0.0-20251013033924-a46b145a78b5 h1:EVSbYRj4NtgQuEOrgaFlCtb2aL+4Aq+D377+Iz9+1go=
+github.com/iami317/interactsh v0.0.0-20251013033924-a46b145a78b5/go.mod h1:m8YdIuVORx30C7TnPZu/FTdxbs+G1nu07CyHCQMndpE=
 github.com/iami317/n3iwf v0.0.0-20241009033059-2cd4efc866c8 h1:wvS/FGOtr9vx2Jsr24OAkyEtXpA7YdGVqpqb/t1nBqg=
 github.com/iami317/n3iwf v0.0.0-20241009033059-2cd4efc866c8/go.mod h1:xRNH6wTpDx1FxZuN7AIn5U1ACZio5SBZdhW4CXqokaw=
 github.com/ianlancetaylor/demangle v0.0.0-20181102032728-5e5cf60278f6/go.mod h1:aSSvb/t6k1mPoxDqO4vJh6VOCGPwU4O0C2/Eqndh1Sc=
