@@ -42,7 +42,16 @@ var ErrExcluded = errors.New("the template was excluded")
 // Matching rule: (tag1 OR tag2...) AND (author1 OR author2...) AND (severity1 OR severity2...) AND (extraTags1 OR extraTags2...)
 // Returns true if the template matches the filter criteria, false otherwise.
 func (tagFilter *TagFilter) Match(template *Template, extraTags []string) (bool, error) {
+	var metadata map[string]interface{}
+	var cpe string
 	templateTags := template.Info.Tags.ToSlice()
+	if template.Info.Classification != nil {
+		cpe = template.Info.Classification.CPE
+	}
+
+	if len(template.Info.Metadata) > 0 {
+		metadata = template.Info.Metadata
+	}
 	for _, templateTag := range templateTags {
 		_, blocked := tagFilter.block[templateTag]
 		_, allowed := tagFilter.matchAllows[templateTag]
@@ -56,7 +65,7 @@ func (tagFilter *TagFilter) Match(template *Template, extraTags []string) (bool,
 		return false, nil
 	}
 
-	if !isTagMatch(tagFilter, templateTags) {
+	if !isTagMatch(tagFilter, templateTags, template.Info.Name, metadata, cpe) {
 		return false, nil
 	}
 
@@ -79,7 +88,6 @@ func (tagFilter *TagFilter) Match(template *Template, extraTags []string) (bool,
 	if !isConditionMatch(tagFilter, template) {
 		return false, nil
 	}
-
 	return true, nil
 }
 
@@ -131,7 +139,7 @@ func isExtraTagMatch(extraTags []string, templateTags []string) bool {
 	return false
 }
 
-func isTagMatch(tagFilter *TagFilter, templateTags []string) bool {
+func isTagMatch(tagFilter *TagFilter, templateTags []string, templateName string, metadata map[string]interface{}, cpe string) bool {
 	if len(tagFilter.allowedTags) == 0 {
 		return true
 	}
@@ -140,6 +148,39 @@ func isTagMatch(tagFilter *TagFilter, templateTags []string) bool {
 		if _, ok := tagFilter.allowedTags[templateTag]; ok {
 			return true
 		}
+	}
+
+	for tag, _ := range tagFilter.allowedTags {
+		//cpe信息中包含标签的模版
+		if len(cpe) > 0 {
+			if strings.Contains(strings.ToLower(cpe), tag) {
+				return true
+			}
+		}
+
+		//匹配metadata信息中包含标签的模版
+		if metadata != nil {
+			if product, ok := metadata["product"]; ok {
+				if prod, oks := product.(string); oks {
+					if strings.Contains(strings.ToLower(prod), tag) {
+						return true
+					}
+				}
+			}
+
+			if vendor, ok := metadata["vendor"]; ok {
+				if vend, oks := vendor.(string); oks {
+					if strings.Contains(strings.ToLower(vend), tag) {
+						return true
+					}
+				}
+			}
+		}
+		//匹配模版名称中包含标签的模版
+		if strings.Contains(strings.ToLower(templateName), tag) {
+			return true
+		}
+
 	}
 
 	return false
